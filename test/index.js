@@ -214,7 +214,6 @@ function testParseSection() {
 function testParseIndexes() {
   var text = "abc{{#foo}}asdf{{bar}}asdf{{/foo}}def";
   var tree = Hogan.parse(Hogan.scan(text));
-  console.log(JSON.stringify(tree));
   is(text.substring(tree[1].i, tree[1].end), "asdf{{bar}}asdf", "section text indexes are correct");
 }
 
