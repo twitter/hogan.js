@@ -10,10 +10,10 @@ the [spec](https://github.com/mustache/spec).
 Hogan compiles templates to HoganTemplate objects, which have a render method.
 
     var data = {
-      screenname: "dhg",
+      screenName: "dhg",
     };
 
-    var template = Hogan.compile("Follow @{{screename}}.");
+    var template = Hogan.compile("Follow @{{screenName}}.");
     var output = template.render(data);
 
     // prints "Follow @dhg."
