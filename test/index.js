@@ -589,7 +589,7 @@ function testShootOutRecurse() {
 
 function testShootOutFilter() {
   var text = "{{#filter}}foo {{bar}}{{/filter}}";
-  var t = Hogan.compile(text)
+  var t = Hogan.compile(text);
   var s = t.render({
     filter: function() {
       return function(text, render) {
