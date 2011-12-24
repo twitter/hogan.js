@@ -19,6 +19,7 @@ var Hogan = Hogan || require('../lib/hogan')
 function testScanTextNoTags() {
   var text = "<h2>hi</h2>";
   var tokens = Hogan.scan(text);
+  output(JSON.stringify(tokens))
   is(tokens.length, 1, "One token");
   is(tokens[0]+'', text, "text is equal to first token");
 }
@@ -663,9 +664,16 @@ function testDefaultRenderImpl() {
   is(ht.render() === '', true, 'default renderImpl returns an array.');
 }
 
+
+function appendText(el, text) {
+  var textNode = document.createTextNode(text);
+  el.appendChild(textNode);
+  el.appendChild(document.createElement('br'));
+}
+
 if (!this["output"]) {
   var output = function (s) {
-    return doc ? doc.getElementById('console').innerHTML += s + '\n' : console.log(s);
+    return doc ? appendText(doc.getElementById('console'), s) : console.log(s);
   };
 }
 var passed = 0;
@@ -759,7 +767,7 @@ function runTests() {
   testImplicitIterator();
   testPartialsAndDelimiters();
   testIndentedStandaloneComment();
-  testNewLineBetweenDelimiterChanges();
+  testNewLineBetweenDelimiterChanges(); 
   complete();
 }
 
