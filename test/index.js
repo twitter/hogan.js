@@ -19,7 +19,6 @@ var Hogan = Hogan || require('../lib/hogan')
 function testScanTextNoTags() {
   var text = "<h2>hi</h2>";
   var tokens = Hogan.scan(text);
-  output(JSON.stringify(tokens))
   is(tokens.length, 1, "One token");
   is(tokens[0]+'', text, "text is equal to first token");
 }
