@@ -1,7 +1,7 @@
 {
   "name": "hogan.js"
   , "description": "A mustache compiler."
-  , "version": "1.0.2"
+  , "version": "1.0.3-dev"
   , "keywords": ["mustache", "template"]
   , "main": "./lib/hogan.js"
   , "homepage": "http://twitter.github.com/hogan.js/"
@@ -10,7 +10,7 @@
     "type": "git"
     , "url": "https://github.com/twitter/hogan.js.git"
   }
-  , "licenses": [ 
+  , "licenses": [
     { "type": "Apache-2.0"
       , "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
