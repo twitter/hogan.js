@@ -15,46 +15,59 @@
 
 var fs = require('fs');
 var path = require('path');
-var jsp = require("uglify-js").parser;
-var pro = require("uglify-js").uglify;
+var Hogan = require(__dirname + '/../lib/hogan');
 
-var packageJSON = JSON.parse(fs.readFileSync('package.json').toString());
-
-// Figure out what version we have.
-var version = packageJSON.version;
-
-// Should have something like N.N.N-dev
-var versionNumbers = version.substring(0, version.indexOf('-')).split('.');
-
-// Check to see whether a build already exists in the web directory
-var target = __dirname + '/../web/builds/' + versionNumbers.join('.');
-if (path.existsSync(target)) {
-  throw new Error('target directory ' + target + ' already exists.');
+function read(path) {
+  return fs.readFileSync(path).toString()
 }
-
-// Hogan release version
-var release = path.normalize(target + '/hogan.js');
 
 // Good enough for little js files
-function copy(target, dest) {
-  return fs.writeFileSync(dest, fs.readFileSync(target).toString());
+function copy(src, dst) {
+  return fs.writeFileSync(dst, read(src));
 }
 
-// Create the directory
-fs.mkdirSync(target, 0755);
+function uglify(src, dst) {
+  var jsp = require("uglify-js").parser;
+  var pro = require("uglify-js").uglify;
+  var orig_code = read(src);
+  var ast = jsp.parse(orig_code); // parse code and get the initial AST
+  ast = pro.ast_mangle(ast); // get a new AST with mangled names
+  ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+  fs.writeFileSync(dst, pro.gen_code(ast)); 
+}
 
-// Copy hogan.js over
-copy(__dirname + '/../lib/hogan.js', release);
+var packageJSON = JSON.parse(read('package.json'));
+var version = packageJSON.version.substring(0, packageJSON.version.indexOf('-'));
 
-// Uglify the source
-var orig_code = fs.readFileSync(release).toString();
-var ast = jsp.parse(orig_code); // parse code and get the initial AST
-ast = pro.ast_mangle(ast); // get a new AST with mangled names
-ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-var final_code = pro.gen_code(ast); // compressed code here
-var minified = path.dirname(release) + '/hogan.min.js';
-fs.writeFileSync(minified, final_code);
+function removeFirstComment(text) {
+  return text.substring(text.indexOf('*/') + 2);
+}
 
-// drop package.json into the web directory with a non-dev version
-packageJSON.version = versionNumbers.join('.');
-fs.writeFileSync(__dirname + '/../web/' + 'package.json', JSON.stringify(packageJSON, null, ' '));
+var context = {
+  template: removeFirstComment(read(__dirname + '/../lib/template.js')),
+  compiler: removeFirstComment(read(__dirname + '/../lib/compiler.js'))
+};
+
+var wrapperPath = '/../wrappers/';
+var wrappers = fs.readdirSync(__dirname + wrapperPath).map(function(f) {
+  return __dirname + wrapperPath + f;
+});
+
+var distPath = __dirname + '/../dist/';
+wrappers.forEach(function(wrapper) {
+  var tail = path.basename(wrapper, '.mustache');
+  var target = distPath + 'hogan-' + version + '.' + tail;
+  var uglified =  distPath + 'hogan-' + version + '.min.' + tail;
+  fs.writeFileSync(target, Hogan.compile(read(wrapper)).render(context));
+  uglify(target, uglified);
+});
+
+// Also release Hogan.Template on its own.
+var templateTarget = distPath + 'template-' + version + '.js';
+fs.writeFileSync(templateTarget, read(__dirname + '/../lib/template.js'));
+uglify(templateTarget, distPath + 'template-' + version + '.min.js');
+
+// Add packageJSON to node distribution
+packageJSON.version = version;
+fs.writeFileSync(__dirname + '/../dist/nodejs/package.json',
+                 JSON.stringify(packageJSON, null, "  "));

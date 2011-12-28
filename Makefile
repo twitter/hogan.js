@@ -1,31 +1,37 @@
 REPO = git@github.com:twitter/hogan.js.git
 BUILD := build
+VERSION = ${shell node -e 'var s = JSON.parse(require("fs").readFileSync("package.json").toString()).version; console.log(s.substring(0, s.indexOf("-")));'}
 
 #
 # Run command line tests
 #
 test:
-	@@ node test/index.js
+	@ node test/index.js
 
 #
 # Run Mustache spec tests
 #
 spec:
-	@@ node test/spec.js
+	@ node test/spec.js
 
 #
 # Run benchmark
 #
 benchmark:
-	@@ node benchmark/console/index.js
+	@ node benchmark/console/index.js
 
+clean:
+	@ rm -rf dist/*
 #
 # Make a new version of Hogan from the current dev version.
 #
-release:
-	@echo "Creating a new version of Hogan."
-	@@ node tools/release.js
-
+release: clean
+	@ echo "Creating a new version of Hogan."
+	@ mkdir -p dist/nodejs
+	@ cp -R lib dist/nodejs/lib
+	@ node tools/release.js
+	@ mkdir -p web/builds/$(VERSION)
+	@ cp dist/*.* web/builds/$(VERSION)/.
 #
 # Make the gh-pages website
 #
