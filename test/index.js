@@ -214,7 +214,6 @@ function testParseSection() {
 function testParseIndexes() {
   var text = "abc{{#foo}}asdf{{bar}}asdf{{/foo}}def";
   var tree = Hogan.parse(Hogan.scan(text));
-  console.log(JSON.stringify(tree));
   is(text.substring(tree[1].i, tree[1].end), "asdf{{bar}}asdf", "section text indexes are correct");
 }
 
@@ -590,7 +589,7 @@ function testShootOutRecurse() {
 
 function testShootOutFilter() {
   var text = "{{#filter}}foo {{bar}}{{/filter}}";
-  var t = Hogan.compile(text)
+  var t = Hogan.compile(text);
   var s = t.render({
     filter: function() {
       return function(text, render) {
@@ -660,13 +659,20 @@ function testRenderOutput() {
 }
 
 function testDefaultRenderImpl() {
-  var ht = new Hogan.Template();
+  var ht = new (Hogan.Template || HoganTemplate)();
   is(ht.render() === '', true, 'default renderImpl returns an array.');
+}
+
+
+function appendText(el, text) {
+  var textNode = document.createTextNode(text);
+  el.appendChild(textNode);
+  el.appendChild(document.createElement('br'));
 }
 
 if (!this["output"]) {
   var output = function (s) {
-    return doc ? doc.getElementById('console').innerHTML += s + '\n' : console.log(s);
+    return doc ? appendText(doc.getElementById('console'), s) : console.log(s);
   };
 }
 var passed = 0;
@@ -760,7 +766,7 @@ function runTests() {
   testImplicitIterator();
   testPartialsAndDelimiters();
   testIndentedStandaloneComment();
-  testNewLineBetweenDelimiterChanges();
+  testNewLineBetweenDelimiterChanges(); 
   complete();
 }
 

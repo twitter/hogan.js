@@ -1,6 +1,6 @@
 ## Hogan.js - A mustache compiler.
 
-[hogan.js](http://twitter.github.com/hogan.js/) is a compiler for the
+[Hogan.js](http://twitter.github.com/hogan.js/) is a compiler for the
 [Mustache](http://mustache.github.com/) templating language. For information
 on Mustache, see the [manpage](http://mustache.github.com/mustache.5.html) and
 the [spec](https://github.com/mustache/spec).
@@ -9,15 +9,17 @@ the [spec](https://github.com/mustache/spec).
 
 Hogan compiles templates to HoganTemplate objects, which have a render method.
 
-    var data = {
-      screenname: "dhg",
-    };
+```js
+var data = {
+  screenName: "dhg",
+};
 
-    var template = Hogan.compile("Follow @{{screename}}.");
-    var output = template.render(data);
+var template = Hogan.compile("Follow @{{screenName}}.");
+var output = template.render(data);
 
-    // prints "Follow @dhg."
-    console.log(output);
+// prints "Follow @dhg."
+console.log(output);
+```
 
 ## Features
 
@@ -30,15 +32,17 @@ different code generation techniques can be tried without changing the parser.
 Hogan exposes scan and parse methods. These can be useful for
 pre-processing templates on the server.
 
-    var text = "{{^check}}{{i18n}}No{{/i18n}}{{/check}}";
-    text +=  "{{#check}}{{i18n}}Yes{{/i18n}}{{/check}}";
-    var tree = Hogan.parse(Hogan.scan(text));
+```js
+var text = "{{^check}}{{i18n}}No{{/i18n}}{{/check}}";
+text +=  "{{#check}}{{i18n}}Yes{{/i18n}}{{/check}}";
+var tree = Hogan.parse(Hogan.scan(text));
 
-    // outputs "# check"
-    console.log(tree[0].tag + " " + tree[0].name);
+// outputs "# check"
+console.log(tree[0].tag + " " + tree[0].name);
 
-    // outputs "Yes"
-    console.log(tree[1].nodes[0].nodes[0]);
+// outputs "Yes"
+console.log(tree[1].nodes[0].nodes[0]);
+```
 
 It's also possible to use HoganTemplate objects without the Hogan compiler
 present. That means you can pre-compile your templates on the server, and
