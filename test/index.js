@@ -516,7 +516,14 @@ function testStringPartials() {
   var partialText = " bar ";
   var t = Hogan.compile(text);
   var s = t.render({}, {'mypartial': partialText});
-  is(s, "foo bar baz", "string partial work");
+  is(s, "foo bar baz", "string partial works.");
+}
+
+function testMissingPartials() {
+  var text = "foo{{>mypartial}} bar";
+  var t = Hogan.compile(text);
+  var s = t.render({});
+  is(s, "foo bar", "missing partial works.");
 }
 
 function testIndentedStandaloneComment() {
@@ -533,6 +540,22 @@ function testNewLineBetweenDelimiterChanges() {
   var s = t.render(data);
   is(s, '\n I got interpolated.\n |data|\nx\n\n {{data}}\n I got interpolated.\n', 'render correct')
 }
+
+function testMustacheJSApostrophe() {
+  var text = '{{apos}}{{control}}';
+  var t = Hogan.compile(text);
+  var s = t.render({'apos':"'", 'control':"X"});
+  is(s, '&#39;X', 'Apostrophe is escaped.'); 
+}
+
+function testMustacheJSArrayOfImplicitPartials() {
+  var text = 'Here is some stuff!\n{{#numbers}}\n{{>partial}}\n{{/numbers}}\n';
+  var partialText = '{{.}}\n';
+  var t = Hogan.compile(text);
+  var s = t.render({numbers:[1,2,3,4]}, {partial: partialText});
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with implicit iterators work.'); 
+}
+
 /* shootout benchmark tests */
 
 function testShootOutString() {
@@ -773,8 +796,12 @@ function runTests() {
   testDottedNames();
   testImplicitIterator();
   testPartialsAndDelimiters();
+  testStringPartials();
+  testMissingPartials();
   testIndentedStandaloneComment();
   testNewLineBetweenDelimiterChanges(); 
+  testMustacheJSApostrophe();
+  testMustacheJSArrayOfImplicitPartials();
   complete();
 }
 
