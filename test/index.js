@@ -511,6 +511,14 @@ function testPartialsAndDelimiters() {
   is(s, " .yes. *\n* .yes. ", "partials work around delimiters");
 }
 
+function testStringPartials() {
+  var text = "foo{{>mypartial}}baz";
+  var partialText = " bar ";
+  var t = Hogan.compile(text);
+  var s = t.render({}, {'mypartial': partialText});
+  is(s, "foo bar baz", "string partial work");
+}
+
 function testIndentedStandaloneComment() {
   var text = 'Begin.\n {{! Indented Comment Block! }}\nEnd.';
   var t = Hogan.compile(text);
