@@ -659,7 +659,7 @@ function testRenderOutput() {
 }
 
 function testDefaultRenderImpl() {
-  var ht = new (Hogan.Template || HoganTemplate)();
+  var ht = new Hogan.Template();
   is(ht.render() === '', true, 'default renderImpl returns an array.');
 }
 
