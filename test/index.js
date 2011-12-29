@@ -511,6 +511,21 @@ function testPartialsAndDelimiters() {
   is(s, " .yes. *\n* .yes. ", "partials work around delimiters");
 }
 
+function testStringPartials() {
+  var text = "foo{{>mypartial}}baz";
+  var partialText = " bar ";
+  var t = Hogan.compile(text);
+  var s = t.render({}, {'mypartial': partialText});
+  is(s, "foo bar baz", "string partial works.");
+}
+
+function testMissingPartials() {
+  var text = "foo{{>mypartial}} bar";
+  var t = Hogan.compile(text);
+  var s = t.render({});
+  is(s, "foo bar", "missing partial works.");
+}
+
 function testIndentedStandaloneComment() {
   var text = 'Begin.\n {{! Indented Comment Block! }}\nEnd.';
   var t = Hogan.compile(text);
@@ -525,6 +540,51 @@ function testNewLineBetweenDelimiterChanges() {
   var s = t.render(data);
   is(s, '\n I got interpolated.\n |data|\nx\n\n {{data}}\n I got interpolated.\n', 'render correct')
 }
+
+function testMustacheJSApostrophe() {
+  var text = '{{apos}}{{control}}';
+  var t = Hogan.compile(text);
+  var s = t.render({'apos':"'", 'control':"X"});
+  is(s, '&#39;X', 'Apostrophe is escaped.'); 
+}
+
+function testMustacheJSArrayOfImplicitPartials() {
+  var text = 'Here is some stuff!\n{{#numbers}}\n{{>partial}}\n{{/numbers}}\n';
+  var partialText = '{{.}}\n';
+  var t = Hogan.compile(text);
+  var s = t.render({numbers:[1,2,3,4]}, {partial: partialText});
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with implicit iterators work.'); 
+}
+
+function testMustacheJSArrayOfPartials() {
+  var text = 'Here is some stuff!\n{{#numbers}}\n{{>partial}}\n{{/numbers}}\n';
+  var partialText = '{{i}}\n';
+  var t = Hogan.compile(text);
+  var s = t.render({numbers:[{i:1},{i:2},{i:3},{i:4}]}, {partial: partialText});
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with arrays work.'); 
+}
+
+function testMustacheJSArrayOfStrings() {
+  var text = '{{#strings}}{{.}} {{/strings}}';
+  var t = Hogan.compile(text);
+  var s = t.render({strings:['foo', 'bar', 'baz']});
+  is(s, 'foo bar baz ', 'array of strings works with implicit iterators.');
+}
+
+function testMustacheJSUndefinedString() {
+  var text = 'foo{{bar}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:undefined});
+  is(s, 'foobaz', 'undefined value does not render.');
+}
+
+function testMustacheJSTripleStacheAltDelimiter() {
+  var text = '{{=<% %>=}}<% foo %> {{foo}} <%{bar}%> {{{bar}}}';
+  var t = Hogan.compile(text);
+  var s = t.render({foo:'yeah', bar:'hmm'});
+  is(s, 'yeah {{foo}} hmm {{{bar}}}', 'triple stache inside alternate delimiter works.');
+}
+
 /* shootout benchmark tests */
 
 function testShootOutString() {
@@ -659,7 +719,7 @@ function testRenderOutput() {
 }
 
 function testDefaultRenderImpl() {
-  var ht = new (Hogan.Template || HoganTemplate)();
+  var ht = new Hogan.Template();
   is(ht.render() === '', true, 'default renderImpl returns an array.');
 }
 
@@ -765,8 +825,16 @@ function runTests() {
   testDottedNames();
   testImplicitIterator();
   testPartialsAndDelimiters();
+  testStringPartials();
+  testMissingPartials();
   testIndentedStandaloneComment();
   testNewLineBetweenDelimiterChanges(); 
+  testMustacheJSApostrophe();
+  testMustacheJSArrayOfImplicitPartials();
+  testMustacheJSArrayOfPartials();
+  testMustacheJSArrayOfStrings();
+  testMustacheJSUndefinedString();
+  testMustacheJSTripleStacheAltDelimiter();
   complete();
 }
 

@@ -19,7 +19,7 @@ var path = require('path');
 
 // Substitute variables in the homepage with values from package.json
 var homeTemplatePath = __dirname + '/../build/gh-pages/index.html.mustache';
-var contextPath = __dirname + '/../build/gh-pages/package.json';
+var contextPath = __dirname + '/../dist/nodejs/package.json';
 
 var homepage = fs.readFileSync(homeTemplatePath).toString();
 var context = JSON.parse(fs.readFileSync(contextPath).toString());
