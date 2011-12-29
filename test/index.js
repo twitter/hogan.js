@@ -571,6 +571,20 @@ function testMustacheJSArrayOfStrings() {
   is(s, 'foo bar baz ', 'array of strings works with implicit iterators.');
 }
 
+function testMustacheJSUndefinedString() {
+  var text = 'foo{{bar}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:undefined});
+  is(s, 'foobaz', 'undefined value does not render.');
+}
+
+function testMustacheJSTripleStacheAltDelimiter() {
+  var text = '{{=<% %>=}}<% foo %> {{foo}} <%{bar}%> {{{bar}}}';
+  var t = Hogan.compile(text);
+  var s = t.render({foo:'yeah', bar:'hmm'});
+  is(s, 'yeah {{foo}} hmm {{{bar}}}', 'triple stache inside alternate delimiter works.');
+}
+
 /* shootout benchmark tests */
 
 function testShootOutString() {
@@ -819,6 +833,8 @@ function runTests() {
   testMustacheJSArrayOfImplicitPartials();
   testMustacheJSArrayOfPartials();
   testMustacheJSArrayOfStrings();
+  testMustacheJSUndefinedString();
+  testMustacheJSTripleStacheAltDelimiter();
   complete();
 }
 
