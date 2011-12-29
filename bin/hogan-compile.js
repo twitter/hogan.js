@@ -11,12 +11,18 @@ var hogan = require('../lib/hogan'),
 // that contains mustache templates
 var argv = process.argv.slice(2);
 
+var output = [];
+
+
 argv.map(function(filePath) {
     var fullPath = path.resolve(__dirname, filePath),
-        openedFile = fs.readFileSync(fullPath, 'utf-8');
+        openedFile = fs.readFileSync(fullPath, 'utf-8'),
+        name = path.basename(filePath, '.mustache');
     if (openedFile) {
-        process.stdout.write(hogan.compile(openedFile, {asString:true}));
+        output.push("'" + name + "': " + hogan.compile(openedFile, {asString:true}));
     }
 });
+
+process.stdout.write('var HoganTemplates = {' + output.join(',\n') + '};\n');
 
 process.exit(0);
