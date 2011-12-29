@@ -556,6 +556,21 @@ function testMustacheJSArrayOfImplicitPartials() {
   is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with implicit iterators work.'); 
 }
 
+function testMustacheJSArrayOfPartials() {
+  var text = 'Here is some stuff!\n{{#numbers}}\n{{>partial}}\n{{/numbers}}\n';
+  var partialText = '{{i}}\n';
+  var t = Hogan.compile(text);
+  var s = t.render({numbers:[{i:1},{i:2},{i:3},{i:4}]}, {partial: partialText});
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with arrays work.'); 
+}
+
+function testMustacheJSArrayOfStrings() {
+  var text = '{{#strings}}{{.}} {{/strings}}';
+  var t = Hogan.compile(text);
+  var s = t.render({strings:['foo', 'bar', 'baz']});
+  is(s, 'foo bar baz ', 'array of strings works with implicit iterators.');
+}
+
 /* shootout benchmark tests */
 
 function testShootOutString() {
@@ -802,6 +817,8 @@ function runTests() {
   testNewLineBetweenDelimiterChanges(); 
   testMustacheJSApostrophe();
   testMustacheJSArrayOfImplicitPartials();
+  testMustacheJSArrayOfPartials();
+  testMustacheJSArrayOfStrings();
   complete();
 }
 
