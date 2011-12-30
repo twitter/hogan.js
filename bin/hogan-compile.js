@@ -19,7 +19,7 @@ argv.map(function(filePath) {
         openedFile = fs.readFileSync(fullPath, 'utf-8'),
         name = path.basename(filePath, '.mustache');
     if (openedFile) {
-        output.push("'" + name + "': " + hogan.compile(openedFile, {asString:true}));
+        output.push("'" + name + "': new Hogan.Template(" + hogan.compile(openedFile, {asString:true}) + ")");
     }
 });
 
