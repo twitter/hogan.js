@@ -18,11 +18,12 @@
 var Hogan = {};
 
 (function (Hogan) {
-  Hogan.Template = function constructor(renderFunc, text, compiler) {
+  Hogan.Template = function constructor(renderFunc, text, compiler, options) {
     if (renderFunc) {
       this.r = renderFunc;
     }
     this.c = compiler;
+    this.options = options;
     this.text = text || '';
   }
 
@@ -51,7 +52,7 @@ var Hogan = {};
       }
 
       if (this.c && typeof partial == 'string') {
-        partial = this.c.compile(partial);
+        partial = this.c.compile(partial, this.options);
       }
 
       return partial.ri(context, partials, indent);
@@ -456,7 +457,7 @@ var Hogan = {};
       return 'function(c,p,i){' + code + ';}';
     }
 
-    return new Hogan.Template(new Function('c', 'p', 'i', code), text, Hogan);
+    return new Hogan.Template(new Function('c', 'p', 'i', code), text, Hogan, options);
   }
 
   function esc(s) {
@@ -527,7 +528,7 @@ var Hogan = {};
     return 'b += ' + id + ';';
   }
 
-  Hogan.parse = function(tokens, options) {
+  Hogan.parse = function(tokens, text, options) {
     options = options || {};
     return buildTree(tokens, '', [], options.sectionTags || []);
   },
@@ -556,7 +557,7 @@ var Hogan = {};
       return t;
     }
 
-    t = this.generate(writeCode(this.parse(this.scan(text, options.delimiters), options)), text, options);
+    t = this.generate(writeCode(this.parse(this.scan(text, options.delimiters), text, options)), text, options);
     return this.cache[key] = t;
   };
 })(typeof exports !== 'undefined' ? exports : Hogan);

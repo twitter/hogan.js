@@ -3,9 +3,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -460,7 +460,7 @@ function testFalsyVariableNoRender() {
 function testSectionExtensions() {
   var text = "Test {{_//|__foo}}bar{{/foo}}";
   var options = {sectionTags:[{o:'_//|__foo', c:'foo'}]};
-  var tree = Hogan.parse(Hogan.scan(text), options);
+  var tree = Hogan.parse(Hogan.scan(text), text, options);
   is(tree[1].tag, "#", "_//|__foo node transformed to section");
   is(tree[1].n, "_//|__foo", "_//|__foo node transformed to section");
 
@@ -474,7 +474,7 @@ function testMisnestedSectionExtensions() {
   var options = {sectionTags:[{o:'__foo', c:'foo'}, {o:'__bar', c:'bar'}]};
   var msg = '';
   try {
-    var tree = Hogan.parse(Hogan.scan(text), options);
+    var tree = Hogan.parse(Hogan.scan(text), text, options);
   } catch (e) {
     msg = e.message;
   }
@@ -545,7 +545,7 @@ function testMustacheJSApostrophe() {
   var text = '{{apos}}{{control}}';
   var t = Hogan.compile(text);
   var s = t.render({'apos':"'", 'control':"X"});
-  is(s, '&#39;X', 'Apostrophe is escaped.'); 
+  is(s, '&#39;X', 'Apostrophe is escaped.');
 }
 
 function testMustacheJSArrayOfImplicitPartials() {
@@ -553,7 +553,7 @@ function testMustacheJSArrayOfImplicitPartials() {
   var partialText = '{{.}}\n';
   var t = Hogan.compile(text);
   var s = t.render({numbers:[1,2,3,4]}, {partial: partialText});
-  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with implicit iterators work.'); 
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with implicit iterators work.');
 }
 
 function testMustacheJSArrayOfPartials() {
@@ -561,7 +561,7 @@ function testMustacheJSArrayOfPartials() {
   var partialText = '{{i}}\n';
   var t = Hogan.compile(text);
   var s = t.render({numbers:[{i:1},{i:2},{i:3},{i:4}]}, {partial: partialText});
-  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with arrays work.'); 
+  is(s, 'Here is some stuff!\n1\n2\n3\n4\n', 'Partials with arrays work.');
 }
 
 function testMustacheJSArrayOfStrings() {
@@ -828,7 +828,7 @@ function runTests() {
   testStringPartials();
   testMissingPartials();
   testIndentedStandaloneComment();
-  testNewLineBetweenDelimiterChanges(); 
+  testNewLineBetweenDelimiterChanges();
   testMustacheJSApostrophe();
   testMustacheJSArrayOfImplicitPartials();
   testMustacheJSArrayOfPartials();
