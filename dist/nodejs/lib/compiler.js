@@ -234,7 +234,7 @@
   }
 
   function writeCode(tree) {
-    return 'i = i || "";var b = i + "";var _ = this;' + walk(tree) + 'return _.fl();';
+    return 'i = i || "";var _ = this;' + walk(tree) + 'return _.fl();';
   }
 
   Hogan.generate = function (code, text, options) {
