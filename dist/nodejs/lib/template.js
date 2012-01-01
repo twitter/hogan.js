@@ -16,14 +16,14 @@
 var Hogan = {};
 
 (function (Hogan) {
-  Hogan.Template = function constructor(renderFunc, text, compiler, options) {
-    if (renderFunc) {
-      this.r = renderFunc;
-    }
+  Hogan.Template = function (renderFunc, text, compiler, options) {
+    this.r = renderFunc || this.r;
     this.c = compiler;
     this.options = options;
     this.text = text || '';
   }
+
+
 
   Hogan.Template.prototype = {
     // render: replaced by generated code.
@@ -62,12 +62,12 @@ var Hogan = {};
           tail = context[context.length - 1];
 
       if (!isArray(tail)) {
-        return buf = section(context, partials);
+        return buf = section(context, partials, this);
       }
 
       for (var i = 0; i < tail.length; i++) {
         context.push(tail[i]);
-        buf += section(context, partials);
+        section(context, partials, this);
         context.pop();
       }
 
@@ -159,13 +159,20 @@ var Hogan = {};
       var t = val.call(cx, text, function(t) {
         return compiler.compile(t, {delimiters: tags}).render(cx, partials);
       });
-      var s = compiler.compile(t.toString(), {delimiters: tags}).render(cx, partials);
-      this.b = s;
+      this.b(compiler.compile(t.toString(), {delimiters: tags}).render(cx, partials));
       return false;
     },
 
-    // higher order template result buffer
-    b: '',
+    // template result buffering
+    buf: "",
+    b: function(s) {
+      this.buf += s;
+    },
+    fl: function() {
+      var result = this.buf;
+      this.buf = "";
+      return result;
+    },
 
     // lambda replace section
     ls: function(val, ctx, partials, start, end, tags) {

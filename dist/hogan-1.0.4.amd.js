@@ -18,14 +18,14 @@
 var Hogan = {};
 
 (function (Hogan) {
-  Hogan.Template = function constructor(renderFunc, text, compiler, options) {
-    if (renderFunc) {
-      this.r = renderFunc;
-    }
+  Hogan.Template = function (renderFunc, text, compiler, options) {
+    this.r = renderFunc || this.r;
     this.c = compiler;
     this.options = options;
     this.text = text || '';
   }
+
+
 
   Hogan.Template.prototype = {
     // render: replaced by generated code.
@@ -64,12 +64,12 @@ var Hogan = {};
           tail = context[context.length - 1];
 
       if (!isArray(tail)) {
-        return buf = section(context, partials);
+        return buf = section(context, partials, this);
       }
 
       for (var i = 0; i < tail.length; i++) {
         context.push(tail[i]);
-        buf += section(context, partials);
+        section(context, partials, this);
         context.pop();
       }
 
@@ -161,13 +161,20 @@ var Hogan = {};
       var t = val.call(cx, text, function(t) {
         return compiler.compile(t, {delimiters: tags}).render(cx, partials);
       });
-      var s = compiler.compile(t.toString(), {delimiters: tags}).render(cx, partials);
-      this.b = s;
+      this.b(compiler.compile(t.toString(), {delimiters: tags}).render(cx, partials));
       return false;
     },
 
-    // higher order template result buffer
-    b: '',
+    // template result buffering
+    buf: "",
+    b: function(s) {
+      this.buf += s;
+    },
+    fl: function() {
+      var result = this.buf;
+      this.buf = "";
+      return result;
+    },
 
     // lambda replace section
     ls: function(val, ctx, partials, start, end, tags) {
@@ -449,7 +456,7 @@ var Hogan = {};
   }
 
   function writeCode(tree) {
-    return 'i = i || "";var b = i + "";var _ = this;' + walk(tree) + 'return b;';
+    return 'i = i || "";var b = i + "";var _ = this;' + walk(tree) + 'return _.fl();';
   }
 
   Hogan.generate = function (code, text, options) {
@@ -499,11 +506,10 @@ var Hogan = {};
   function section(nodes, id, method, start, end, tags) {
     return 'if(_.s(_.' + method + '("' + esc(id) + '",c,p,1),' +
            'c,p,0,' + start + ',' + end + ', "' + tags + '")){' +
-           'b += _.rs(c,p,' +
-           'function(c,p){ var b = "";' +
+           '_.rs(c,p,' +
+           'function(c,p,_){' +
            walk(nodes) +
-           'return b;});c.pop();}' +
-           'else{b += _.b; _.b = ""};';
+           '});c.pop();}';
   }
 
   function invertedSection(nodes, id, method) {
@@ -513,19 +519,19 @@ var Hogan = {};
   }
 
   function partial(tok) {
-    return 'b += _.rp("' +  esc(tok.n) + '",c,p,"' + (tok.indent || '') + '");';
+    return '_.b(_.rp("' +  esc(tok.n) + '",c,p,"' + (tok.indent || '') + '"));';
   }
 
   function tripleStache(id, method) {
-    return 'b += (_.' + method + '("' + esc(id) + '",c,p,0));';
+    return '_.b(_.' + method + '("' + esc(id) + '",c,p,0));';
   }
 
   function variable(id, method) {
-    return 'b += (_.v(_.' + method + '("' + esc(id) + '",c,p,0)));';
+    return '_.b(_.v(_.' + method + '("' + esc(id) + '",c,p,0)));';
   }
 
   function text(id) {
-    return 'b += ' + id + ';';
+    return '_.b(' + id + ');';
   }
 
   Hogan.parse = function(tokens, text, options) {
