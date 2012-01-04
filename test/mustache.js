@@ -3,9 +3,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ var compiler = fs.readFileSync(__dirname + '/../lib/compiler.js').toString();
 var mustache_wrapper = fs.readFileSync(__dirname + '/../wrappers/mustache.js.mustache').toString();
 
 // Create a Mustache.js emulator from the distribution template
-var engines = (new Function(Hogan.compile(mustache_wrapper).render({template: template, compiler: compiler}) + 
+var engines = (new Function(Hogan.compile(mustache_wrapper).render({template: template, compiler: compiler}) +
                                           '; return {Hogan: Hogan, Mustache: Mustache};'))();
 
 var Mustache = engines.Mustache;
@@ -58,7 +58,13 @@ var t = Hogan2.compile(text);
 s = t.render(context, {'mypartial': partialText});
 is(s, 'abc bar def  ghi', 'Hogan behavior not changed by Mustache.js emulation.');
 
-// 
+// Check for sendFun behavior
+var buf = "";
+function send(s) {
+  buf += "-FOO " + s + " FOO-";
+}
+var s = Mustache.to_html(text, context, {'mypartial': partialText}, send);
+is(buf, '-FOO abc bar def qux ghi FOO-', 'Correct emulation of Mustache.js sendFun.');
 
 
 function is(got, expected, msg) {
