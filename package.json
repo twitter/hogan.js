@@ -15,4 +15,7 @@
       , "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ]
+  , "devDependencies": {
+      "uglify-js": "1.2.3"
+  }
 }
