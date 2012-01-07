@@ -24,13 +24,13 @@ var specials = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
     templates;
 
 
-// escape special regexp characters
+// Escape special regexp characters
 function esc(text) {
   return text.replace(specialsRegExp, '\\$1');
 }
 
 
-// check for dirs and correct ext (<3 for windows)
+// Check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
   var usage = 'USAGE: hulk ./templates/*.mustaches\n' +
               'NOTE:  hulk supports the "*" wildcard and allows you to target specific extensions too',
@@ -73,7 +73,7 @@ function removeByteOrderMark(text) {
 }
 
 
-// Write a template foreach file that macthes template extension
+// Write a template foreach file that matches template extension
 templates = extractFiles(process.argv.slice(2))
   .map(function (file) {
     var openedFile = fs.readFileSync(file, 'utf-8'), name;
@@ -87,7 +87,7 @@ templates = extractFiles(process.argv.slice(2))
   });
 
 
-// output templates
+// Output templates
 if (!templates.length) return;
 console.log('var templates = {};');
 console.log(templates.join('\n'));
