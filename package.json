@@ -16,5 +16,5 @@
     }
   ]
   , "devDependencies": { "uglify-js": "*" }
-  , "bin" : { "hogan-compile" : "./bin/hogan-compile.js" }
+  , "bin" : { "hulk" : "./bin/hulk" }
 }
