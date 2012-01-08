@@ -16,6 +16,7 @@
 var fs = require('fs');
 var path = require('path');
 var Hogan = require(__dirname + '/../lib/hogan');
+var minlicense = '/**\n* @preserve Copyright 2012 Twitter, Inc.\n* @license http://www.apache.org/licenses/LICENSE-2.0.txt\n*/\n';
 
 function read(path) {
   return fs.readFileSync(path).toString()
@@ -33,7 +34,7 @@ function uglify(src, dst) {
   var ast = jsp.parse(orig_code); // parse code and get the initial AST
   ast = pro.ast_mangle(ast); // get a new AST with mangled names
   ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-  fs.writeFileSync(dst, pro.gen_code(ast)); 
+  fs.writeFileSync(dst, minlicense + pro.gen_code(ast));
 }
 
 var packageJSON = JSON.parse(read('package.json'));

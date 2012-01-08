@@ -421,6 +421,9 @@ function testNegativeSection() {
 
   s = t.render({foo:true});
   is(s, "This template contains an inverted section.", "inverted sections with true context work");
+
+  s = t.render({foo: function() { return false; }});
+  is(s, "This template BOO contains an inverted section.", "inverted sections with false returning method in context work");
 }
 
 function testSectionElision() {
