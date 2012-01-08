@@ -581,6 +581,28 @@ function testMustacheJSUndefinedString() {
   is(s, 'foobaz', 'undefined value does not render.');
 }
 
+function testMustacheJSUndefinedTripleStache() {
+  var text = 'foo{{{bar}}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:undefined});
+  is(s, 'foobaz', 'undefined value does not render in triple stache.');
+}
+
+function testMustacheJSNullString() {
+  var text = 'foo{{bar}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:null});
+  is(s, 'foobaz', 'undefined value does not render.');
+}
+
+function testMustacheJSNullTripleStache() {
+  var text = 'foo{{{bar}}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:null});
+  is(s, 'foobaz', 'undefined value does not render in triple stache.');
+}
+
+
 function testMustacheJSTripleStacheAltDelimiter() {
   var text = '{{=<% %>=}}<% foo %> {{foo}} <%{bar}%> {{{bar}}}';
   var t = Hogan.compile(text);
@@ -837,6 +859,9 @@ function runTests() {
   testMustacheJSArrayOfPartials();
   testMustacheJSArrayOfStrings();
   testMustacheJSUndefinedString();
+  testMustacheJSUndefinedTripleStache();
+  testMustacheJSNullString();
+  testMustacheJSNullTripleStache();
   testMustacheJSTripleStacheAltDelimiter();
   complete();
 }
