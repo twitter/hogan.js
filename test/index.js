@@ -463,7 +463,7 @@ function testFalsyVariableNoRender() {
 function testSectionExtensions() {
   var text = "Test {{_//|__foo}}bar{{/foo}}";
   var options = {sectionTags:[{o:'_//|__foo', c:'foo'}]};
-  var tree = Hogan.parse(Hogan.scan(text), options);
+  var tree = Hogan.parse(Hogan.scan(text), text, options);
   is(tree[1].tag, "#", "_//|__foo node transformed to section");
   is(tree[1].n, "_//|__foo", "_//|__foo node transformed to section");
 
@@ -477,7 +477,7 @@ function testMisnestedSectionExtensions() {
   var options = {sectionTags:[{o:'__foo', c:'foo'}, {o:'__bar', c:'bar'}]};
   var msg = '';
   try {
-    var tree = Hogan.parse(Hogan.scan(text), options);
+    var tree = Hogan.parse(Hogan.scan(text), text, options);
   } catch (e) {
     msg = e.message;
   }
@@ -580,6 +580,28 @@ function testMustacheJSUndefinedString() {
   var s = t.render({bar:undefined});
   is(s, 'foobaz', 'undefined value does not render.');
 }
+
+function testMustacheJSUndefinedTripleStache() {
+  var text = 'foo{{{bar}}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:undefined});
+  is(s, 'foobaz', 'undefined value does not render in triple stache.');
+}
+
+function testMustacheJSNullString() {
+  var text = 'foo{{bar}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:null});
+  is(s, 'foobaz', 'undefined value does not render.');
+}
+
+function testMustacheJSNullTripleStache() {
+  var text = 'foo{{{bar}}}baz';
+  var t = Hogan.compile(text);
+  var s = t.render({bar:null});
+  is(s, 'foobaz', 'undefined value does not render in triple stache.');
+}
+
 
 function testMustacheJSTripleStacheAltDelimiter() {
   var text = '{{=<% %>=}}<% foo %> {{foo}} <%{bar}%> {{{bar}}}';
@@ -837,6 +859,9 @@ function runTests() {
   testMustacheJSArrayOfPartials();
   testMustacheJSArrayOfStrings();
   testMustacheJSUndefinedString();
+  testMustacheJSUndefinedTripleStache();
+  testMustacheJSNullString();
+  testMustacheJSNullTripleStache();
   testMustacheJSTripleStacheAltDelimiter();
   complete();
 }
