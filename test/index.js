@@ -460,6 +460,18 @@ function testFalsyVariableNoRender() {
   is(s, "I () be seen!", "missing value doesn't render.");
 }
 
+function testUndefinedReturnValueFromLambda() {
+  var text = "abc{{foo}}def";
+  var t = Hogan.compile(text);
+  var context = {
+    foo: function(s) {
+      return undefined;
+    }
+  }
+  var s = t.render(context);
+  is(s, "abcdef", "deal with undefined return values from lambdas.")
+}
+
 function testSectionExtensions() {
   var text = "Test {{_//|__foo}}bar{{/foo}}";
   var options = {sectionTags:[{o:'_//|__foo', c:'foo'}]};
@@ -860,6 +872,7 @@ function runTests() {
   testRenderWithWhitespaceAroundTripleStache();
   testRenderWithWhitespaceAroundAmpersand();
   testFalsyVariableNoRender();
+  testUndefinedReturnValueFromLambda();
   testRenderOutput();
   testDefaultRenderImpl();
   testSectionExtensions();
