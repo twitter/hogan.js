@@ -484,6 +484,32 @@ function testMisnestedSectionExtensions() {
   is(msg, "Nesting error: __foo vs. bar", "Error is generated");
 }
 
+function testSectionExtensionsInHigherOrderSections() {
+  var text = "Test{{_foo}}bar{{/foo}}";
+  var options = {sectionTags:[{o:'_foo', c:'foo'}, {o:'_baz', c:'baz'}]};
+  var t = Hogan.compile(text, options);
+  var context = {
+    "_foo": function (s) {
+      return "{{_baz}}" + s + "{{/baz}}";
+    }
+  }
+  var s = t.render(context);
+  is(s, "Test", "unprocessed test");
+}
+
+function testSectionExtensionsInLambdaReplaceVariable() {
+  var text = "Test{{foo}}";
+  var options = {sectionTags:[{o:'_baz', c:'baz'}]};
+  var t = Hogan.compile(text, options);
+  var context = {
+    "foo": function (s) {
+      return "{{_baz}}" + s + "{{/baz}}";
+    }
+  }
+  var s = t.render(context);
+  is(s, "Test", "unprocessed test");
+}
+
 function testNestedSection() {
   var text = "{{#foo}}{{#bar}}{{baz}}{{/bar}}{{/foo}}";
   var t = Hogan.compile(text);
@@ -838,6 +864,8 @@ function runTests() {
   testDefaultRenderImpl();
   testSectionExtensions();
   testMisnestedSectionExtensions();
+  testSectionExtensionsInHigherOrderSections();
+  testSectionExtensionsInLambdaReplaceVariable();
   testNestedSection();
   testShootOutString();
   testShootOutReplace();
