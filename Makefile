@@ -6,7 +6,7 @@ VERSION = ${shell node -e 'var s = JSON.parse(require("fs").readFileSync("packag
 # Run command line tests
 #
 test:
-	@ node test/index.js
+	@ node test/run.js test/index.html
 
 #
 # Run Mustache spec tests
