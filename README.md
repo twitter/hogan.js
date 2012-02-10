@@ -33,8 +33,8 @@ Hogan exposes scan and parse methods. These can be useful for
 pre-processing templates on the server.
 
 ```js
-var text = "{{^check}}{{i18n}}No{{/i18n}}{{/check}}";
-text +=  "{{#check}}{{i18n}}Yes{{/i18n}}{{/check}}";
+var text = "{{^check}}{{#i18n}}No{{/i18n}}{{/check}}";
+text +=  "{{#check}}{{#i18n}}Yes{{/i18n}}{{/check}}";
 var tree = Hogan.parse(Hogan.scan(text));
 
 // outputs "# check"
