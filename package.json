@@ -17,7 +17,8 @@
   ]
   , "devDependencies": {
     "uglify-js": "*"
-    , "grunt": "0.2.15"
+    , "jsdom": "0.2.10"
+    , "step": "0.0.5"
   }
   , "bin" : { "hulk" : "./bin/hulk" }
 }
