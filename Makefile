@@ -6,7 +6,7 @@ VERSION = ${shell node -e 'var s = JSON.parse(require("fs").readFileSync("packag
 # Run command line tests
 #
 test:
-	@ node test/run.js test/index.html
+	@ node_modules/grunt/bin/grunt qunit
 
 #
 # Run Mustache spec tests
