@@ -21,6 +21,7 @@ var hogan = require('../lib/hogan.js'),
 
 var specials = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\'],
     specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g'),
+    oneLineJsRegExp = new RegExp('"|\\\\|\\r?\\n', 'g'),
     templates;
 
 
@@ -73,14 +74,37 @@ function removeByteOrderMark(text) {
 }
 
 
+function oneLineJsMatcher(match) {
+  var retVal = 'ERROR!';
+
+  switch (match) {
+    case '"':
+      retVal = '\\"';
+      break;
+
+    case '\\':
+      retVal = '\\\\';
+      break;
+          
+    case '\r\n':
+    case '\n':
+      retVal = '';
+      break;
+  }
+
+  return retVal;
+}
+
+
 // Write a template foreach file that matches template extension
 templates = extractFiles(process.argv.slice(2))
   .map(function (file) {
-    var openedFile = fs.readFileSync(file, 'utf-8'), name;
+    var openedFile = fs.readFileSync(file, 'utf-8'), name, escapedOpenedFile;
     if (!openedFile) return;
     name = path.basename( file ).replace(/\..*$/, '');
     openedFile = removeByteOrderMark(openedFile.trim());
-    return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
+    escapedOpenedFile = openedFile.replace(oneLineJsRegExp, oneLineJsMatcher);
+    return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ', "' + escapedOpenedFile + '", Hogan);';
   })
   .filter(function (t) {
     return t;
