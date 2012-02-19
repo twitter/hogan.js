@@ -78,7 +78,7 @@ templates = extractFiles(process.argv.slice(2))
   .map(function (file) {
     var openedFile = fs.readFileSync(file, 'utf-8'), name;
     if (!openedFile) return;
-    name = file.replace(/\..*$/, '');
+    name = path.basename(file).replace(/\..*$/, '');
     openedFile = removeByteOrderMark(openedFile.trim());
     return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
   })
