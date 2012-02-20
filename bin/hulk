@@ -87,8 +87,11 @@ function oneLineJsMatcher(match) {
       break;
           
     case '\r\n':
+      retVal ='\\r\\n';
+      break;
+
     case '\n':
-      retVal = '';
+      retVal = '\\n';
       break;
   }
 
