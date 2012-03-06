@@ -634,6 +634,15 @@ test("Mustache JS Triple Stache Alt Delimiter", function() {
   is(s, 'yeah {{foo}} hmm {{{bar}}}', 'triple stache inside alternate delimiter works.');
 });
 
+/* Safety tests */
+
+test("Updates object state", function() {
+  var text = '{{foo}} {{bar}} {{foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({foo: 1, bar: function() { this.foo++; return 42; } });
+  is(s, '1 42 2');
+});
+
 /* shootout benchmark tests */
 
 test("Shoot Out String", function() {
