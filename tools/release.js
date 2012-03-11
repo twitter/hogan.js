@@ -38,7 +38,7 @@ function uglify(src, dst) {
 }
 
 var packageJSON = JSON.parse(read('package.json'));
-var version = packageJSON.version.substring(0, packageJSON.version.indexOf('-'));
+var version = packageJSON.version;
 
 function removeFirstComment(text) {
   return text.substring(text.indexOf('*/') + 2);
@@ -67,8 +67,3 @@ wrappers.forEach(function(wrapper) {
 var templateTarget = distPath + 'template-' + version + '.js';
 fs.writeFileSync(templateTarget, read(__dirname + '/../lib/template.js'));
 uglify(templateTarget, distPath + 'template-' + version + '.min.js');
-
-// Add packageJSON to node distribution
-packageJSON.version = version;
-fs.writeFileSync(__dirname + '/../dist/nodejs/package.json',
-                 JSON.stringify(packageJSON, null, "  "));
