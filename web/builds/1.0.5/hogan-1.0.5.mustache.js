@@ -19,13 +19,13 @@
 
 var Hogan = {};
 
-(function (Hogan) {
-  Hogan.Template = function constructor(renderFunc, text, compiler) {
-    if (renderFunc) {
-      this.r = renderFunc;
-    }
+(function (Hogan, useArrayBuffer) {
+  Hogan.Template = function (renderFunc, text, compiler, options) {
+    this.r = renderFunc || this.r;
     this.c = compiler;
+    this.options = options;
     this.text = text || '';
+    this.buf = (useArrayBuffer) ? [] : '';
   }
 
   Hogan.Template.prototype = {
@@ -34,6 +34,9 @@ var Hogan = {};
 
     // variable escaping
     v: hoganEscape,
+
+    // triple stache
+    t: coerceToString,
 
     render: function render(context, partials, indent) {
       return this.ri([context], partials || {}, indent);
@@ -53,7 +56,7 @@ var Hogan = {};
       }
 
       if (this.c && typeof partial == 'string') {
-        partial = this.c.compile(partial);
+        partial = this.c.compile(partial, this.options);
       }
 
       return partial.ri(context, partials, indent);
@@ -61,20 +64,18 @@ var Hogan = {};
 
     // render a section
     rs: function(context, partials, section) {
-      var buf = '',
-          tail = context[context.length - 1];
+      var tail = context[context.length - 1];
 
       if (!isArray(tail)) {
-        return buf = section(context, partials);
+        section(context, partials, this);
+        return;
       }
 
       for (var i = 0; i < tail.length; i++) {
         context.push(tail[i]);
-        buf += section(context, partials);
+        section(context, partials, this);
         context.pop();
       }
-
-      return buf;
     },
 
     // maybe start a section
@@ -159,16 +160,20 @@ var Hogan = {};
     // higher order templates
     ho: function(val, cx, partials, text, tags) {
       var compiler = this.c;
+      var options = this.options;
+      options.delimiters = tags;
       var t = val.call(cx, text, function(t) {
-        return compiler.compile(t, {delimiters: tags}).render(cx, partials);
+        return compiler.compile(t, options).render(cx, partials);
       });
-      var s = compiler.compile(t.toString(), {delimiters: tags}).render(cx, partials);
-      this.b = s;
+      this.b(compiler.compile(t.toString(), options).render(cx, partials));
       return false;
     },
 
-    // higher order template result buffer
-    b: '',
+    // template result buffering
+    b: (useArrayBuffer) ? function(s) { this.buf.push(s); } :
+                          function(s) { this.buf += s; },
+    fl: (useArrayBuffer) ? function() { var r = this.buf.join(''); this.buf = []; return r; } :
+                           function() { var r = this.buf; this.buf = ''; return r; },
 
     // lambda replace section
     ls: function(val, ctx, partials, inverted, start, end, tags) {
@@ -199,10 +204,10 @@ var Hogan = {};
       if (typeof result == 'function') {
         result = result.call(cx);
       }
-      result = result.toString();
+      result = coerceToString(result);
 
-      if (this.c && ~result.indexOf("{{")) {
-        return this.c.compile(result).render(cx, partials);
+      if (this.c && ~result.indexOf("{\u007B")) {
+        return this.c.compile(result, this.options).render(cx, partials);
       }
 
       return result;
@@ -217,8 +222,13 @@ var Hogan = {};
       rQuot = /\"/g,
       hChars =/[&<>\"\']/;
 
+
+  function coerceToString(val) {
+    return String((val === null || val === undefined) ? '' : val);
+  }
+
   function hoganEscape(str) {
-    str = String((str === null || str === undefined) ? '' : str);
+    str = coerceToString(str);
     return hChars.test(str) ?
       str
         .replace(rAmp,'&amp;')
@@ -459,7 +469,7 @@ var Hogan = {};
   }
 
   function writeCode(tree) {
-    return 'i = i || "";var b = i + "";var _ = this;' + walk(tree) + 'return b;';
+    return 'var _=this;_.b(i=i||"");' + walk(tree) + 'return _.fl();';
   }
 
   Hogan.generate = function (code, text, options) {
@@ -467,7 +477,7 @@ var Hogan = {};
       return 'function(c,p,i){' + code + ';}';
     }
 
-    return new Hogan.Template(new Function('c', 'p', 'i', code), text, Hogan);
+    return new Hogan.Template(new Function('c', 'p', 'i', code), text, Hogan, options);
   }
 
   function esc(s) {
@@ -508,37 +518,36 @@ var Hogan = {};
 
   function section(nodes, id, method, start, end, tags) {
     return 'if(_.s(_.' + method + '("' + esc(id) + '",c,p,1),' +
-           'c,p,0,' + start + ',' + end + ', "' + tags + '")){' +
-           'b += _.rs(c,p,' +
-           'function(c,p){ var b = "";' +
+           'c,p,0,' + start + ',' + end + ',"' + tags + '")){' +
+           '_.rs(c,p,' +
+           'function(c,p,_){' +
            walk(nodes) +
-           'return b;});c.pop();}' +
-           'else{b += _.b; _.b = ""};';
+           '});c.pop();}';
   }
 
   function invertedSection(nodes, id, method) {
-    return 'if (!_.s(_.' + method + '("' + esc(id) + '",c,p,1),c,p,1,0,0,"")){' +
+    return 'if(!_.s(_.' + method + '("' + esc(id) + '",c,p,1),c,p,1,0,0,"")){' +
            walk(nodes) +
            '};';
   }
 
   function partial(tok) {
-    return 'b += _.rp("' +  esc(tok.n) + '",c,p,"' + (tok.indent || '') + '");';
+    return '_.b(_.rp("' +  esc(tok.n) + '",c,p,"' + (tok.indent || '') + '"));';
   }
 
   function tripleStache(id, method) {
-    return 'b += (_.' + method + '("' + esc(id) + '",c,p,0));';
+    return '_.b(_.t(_.' + method + '("' + esc(id) + '",c,p,0)));';
   }
 
   function variable(id, method) {
-    return 'b += (_.v(_.' + method + '("' + esc(id) + '",c,p,0)));';
+    return '_.b(_.v(_.' + method + '("' + esc(id) + '",c,p,0)));';
   }
 
   function text(id) {
-    return 'b += ' + id + ';';
+    return '_.b(' + id + ');';
   }
 
-  Hogan.parse = function(tokens, options) {
+  Hogan.parse = function(tokens, text, options) {
     options = options || {};
     return buildTree(tokens, '', [], options.sectionTags || []);
   },
@@ -567,7 +576,7 @@ var Hogan = {};
       return t;
     }
 
-    t = this.generate(writeCode(this.parse(this.scan(text, options.delimiters), options)), text, options);
+    t = this.generate(writeCode(this.parse(this.scan(text, options.delimiters), text, options)), text, options);
     return this.cache[key] = t;
   };
 })(typeof exports !== 'undefined' ? exports : Hogan);
