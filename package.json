@@ -1,7 +1,7 @@
 {
   "name": "hogan.js"
   , "description": "A mustache compiler."
-  , "version": "1.0.6"
+  , "version": "2.0.0"
   , "keywords": ["mustache", "template"]
   , "main": "./lib/hogan.js"
   , "homepage": "http://twitter.github.com/hogan.js/"
