@@ -501,12 +501,44 @@ test("Section Extensions In Lambda Replace Variable", function() {
   var options = {sectionTags:[{o:'_baz', c:'baz'}]};
   var t = Hogan.compile(text, options);
   var context = {
-    "foo": function (s) {
-      return "{{_baz}}" + s + "{{/baz}}";
+    "foo": function () {
+      return function() { "{{_baz}}" + s + "{{/baz}}"; };
     }
   }
   var s = t.render(context);
   is(s, "Test", "unprocessed test");
+});
+
+test("Mustache not reprocessed for method calls in interpolations", function() {
+  var text = "text with {{foo}} inside";
+  var t = Hogan.compile(text);
+  var context = {
+    foo: function() {
+      return "no processing of {{tags}}";
+    }
+  }
+  var s = t.render(context);
+  is(s, "text with no processing of {{tags}} inside", "method calls should not be processed as mustache.");
+
+  var text = "text with {{{foo}}} inside";
+  var t = Hogan.compile(text);
+  var s = t.render(context);
+  is(s, "text with no processing of {{tags}} inside", "method calls should not be processed as mustache in triple staches.");
+});
+
+test("Mustache is reprocessed for lambdas in interpolations", function() {
+  var text = "text with {{foo}} inside";
+  var t = Hogan.compile(text);
+  var context = {
+    bar: "42",
+    foo: function() {
+      return function() {
+        return "processing of {{bar}}";
+      };
+    }
+  };
+  var s = t.render(context);
+  is(s, "text with processing of 42 inside", "the return value of lambdas should be processed mustache.");
 });
 
 test("Nested Section", function() {
@@ -710,13 +742,13 @@ test("Shoot Out Filter", function() {
   var t = Hogan.compile(text);
   var s = t.render({
     filter: function() {
-      return function(text, render) {
-        return render(text).toUpperCase();
+      return function(text) {
+        return text.toUpperCase() + "{{bar}}";
       }
     },
     bar: "bar"
   });
-  var expected = "FOO BAR"
+  var expected = "FOO bar"
   is(s, expected, "Shootout Filter compiled correctly");
 });
 
