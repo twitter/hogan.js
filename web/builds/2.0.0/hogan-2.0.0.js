@@ -160,10 +160,9 @@ var Hogan = {};
       var compiler = this.c;
       var options = this.options;
       options.delimiters = tags;
-      var t = val.call(cx, text, function(t) {
-        return compiler.compile(t, options).render(cx, partials);
-      });
-      this.b(compiler.compile(t.toString(), options).render(cx, partials));
+      var text = val.call(cx, text);
+      text = (text == null) ? String(text) : text.toString();
+      this.b(compiler.compile(text, options).render(cx, partials));
       return false;
     },
 
@@ -199,16 +198,15 @@ var Hogan = {};
     lv: function(val, ctx, partials) {
       var cx = ctx[ctx.length - 1];
       var result = val.call(cx);
+
       if (typeof result == 'function') {
-        result = result.call(cx);
-      }
-      result = coerceToString(result);
-
-      if (this.c && ~result.indexOf("{\u007B")) {
-        return this.c.compile(result, this.options).render(cx, partials);
+        result = coerceToString(result.call(cx));
+        if (this.c && ~result.indexOf("{\u007B")) {
+          return this.c.compile(result, this.options).render(cx, partials);
+        }
       }
 
-      return result;
+      return coerceToString(result);
     }
 
   };
