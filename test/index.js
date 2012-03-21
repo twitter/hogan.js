@@ -19,7 +19,7 @@ test("Scan Text No Tags", function() {
   var text = "<h2>hi</h2>";
   var tokens = Hogan.scan(text);
   is(tokens.length, 1, "One token");
-  is(tokens[0]+'', text, "text is equal to first token");
+  is(tokens[0].text + '', text, "text is equal to first token");
 });
 
 test("Scan One Tag", function() {
@@ -33,13 +33,13 @@ test("Scan Multiple Tags", function() {
   var text = "asdf{{hmm}}asdf2{{hmm2}}asdf3";
   var tokens = Hogan.scan(text);
   is(tokens.length, 5, "3 text tokens, 2 tag tokens.");
-  is(tokens[0]+'', "asdf", "first token is text");
+  is(tokens[0].text+'', "asdf", "first token is text");
   is(tokens[1].n, "hmm", "second token is tag");
   is(tokens[1].tag, "_v", "second token is a variable");
-  is(tokens[2]+'', "asdf2", "third token is text");
+  is(tokens[2].text+'', "asdf2", "third token is text");
   is(tokens[3].n, "hmm2", "fourth token is tag");
   is(tokens[3].tag, "_v", "fourth token is a variable");
-  is(tokens[4]+'', "asdf3", "Fifth token is text");
+  is(tokens[4].text+'', "asdf3", "Fifth token is text");
 });
 
 test("Scan Section Open", function() {
@@ -72,13 +72,13 @@ test("Scan Section In Content", function() {
   var text = "abc{{#hmm}}def{{/hmm}}ghi";
   var tokens = Hogan.scan(text);
   is(tokens.length, 5, "3 text tokens, 2 tag tokens.");
-  is(tokens[0]+'', "abc", "first token is text");
+  is(tokens[0].text + '', "abc", "first token is text");
   is(tokens[1].n, "hmm", "second token is tag");
   is(tokens[1].tag, "#", "second token is a variable");
-  is(tokens[2]+'', "def", "third token is text");
+  is(tokens[2].text+'', "def", "third token is text");
   is(tokens[3].n, "hmm", "fourth token is tag");
   is(tokens[3].tag, "/", "fourth token is a variable");
-  is(tokens[4]+'', "ghi", "Fifth token is text");
+  is(tokens[4].text+'', "ghi", "Fifth token is text");
 });
 
 test("Scan Negative Section", function() {
@@ -127,36 +127,36 @@ test("Scan Section With Triple Stache Inside", function() {
   var text = "a{{#yo}}b{{{hmm}}}c{{/yo}}d";
   var tokens = Hogan.scan(text);
   is(tokens.length, 7, "One token");
-  is(tokens[0]+'', "a", "First token content is correct text.");
+  is(tokens[0].text+'', "a", "First token content is correct text.");
   is(tokens[1].n, "yo", "Second token content is correct text.");
   is(tokens[1].tag, "#", "Second token is a section.");
-  is(tokens[2]+'', "b", "Third token content is correct text.");
+  is(tokens[2].text+'', "b", "Third token content is correct text.");
   is(tokens[3].n, "hmm", "Fourth token content is correct text.");
   is(tokens[3].tag, "{", "Fourth token is a triple stache.");
-  is(tokens[4]+'', "c", "Fifth token content is correct text.");
+  is(tokens[4].text+'', "c", "Fifth token content is correct text.");
   is(tokens[5].n, "yo", "Sixth token content is correct text.");
   is(tokens[5].tag, "/", "Sixth token is a close.");
-  is(tokens[6]+'', "d", "Seventh token content is correct text.");
+  is(tokens[6].text+'', "d", "Seventh token content is correct text.");
 });
 
 test("Scan Set Delimiter", function() {
   var text = "a{{=<% %>=}}b";
   var tokens = Hogan.scan(text);
   is(tokens.length, 2, "change delimiter doesn't appear as token.");
-  is(tokens[0]+'', "a", "text before change delimiter is processed.");
-  is(tokens[1]+'', "b", "text after change delimiter is processed.");
+  is(tokens[0].text+'', "a", "text before change delimiter is processed.");
+  is(tokens[1].text+'', "b", "text after change delimiter is processed.");
 });
 
 test("Scan Reset Delimiter", function() {
   var text = "a{{=<% %>=}}b<%hmm%>c<%={{ }}=%>d{{hmm}}";
   var tokens = Hogan.scan(text);
   is(tokens.length, 6, "8 tokens, delimiter changes don't count.");
-  is(tokens[0]+'', "a", "first token is correct.");
-  is(tokens[1]+'', "b", "third token is correct.");
+  is(tokens[0].text+'', "a", "first token is correct.");
+  is(tokens[1].text+'', "b", "third token is correct.");
   is(tokens[2].tag, "_v", "third token is correct tag.");
   is(tokens[2].n, "hmm", "third token is correct name.");
-  is(tokens[3]+'', "c", "fifth token is correct.");
-  is(tokens[4]+'', "d", "seventh token is correct.");
+  is(tokens[3].text+'', "c", "fifth token is correct.");
+  is(tokens[4].text+'', "d", "seventh token is correct.");
   is(tokens[5].tag, "_v", "eighth token is correct tag.");
   is(tokens[5].n, "hmm", "eighth token is correct name.");
 });
@@ -166,14 +166,14 @@ test("Single Char Delimiter", function() {
   var tokens = Hogan.scan(text);
 
   var t = Hogan.compile(text);
-  s = t.render({foo: "bar", text: 'It worked!'});
+  var s = t.render({foo: "bar", text: 'It worked!'});
   is(s, '(bar It worked!)', "Hogan substitution worked after custom delimiters.");
 });
 
 test("Set Delimiter With Whitespace", function() {
   var text = "{{= | | =}}|foo|";
   var t = Hogan.compile(text);
-  s = t.render({foo: "bar"});
+  var s = t.render({foo: "bar"});
   is(s, 'bar', "custom delimiters with whitespace works.")
 });
 
@@ -181,17 +181,17 @@ test("Parse Basic", function() {
   var text = "test";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 1, "one parse node");
-  is(tree[0]+'', "test", "text is correct");
+  is(tree[0].text+'', "test", "text is correct");
 });
 
 test("Parse Variables", function() {
   var text = "test{{foo}}test!{{bar}}test!!{{baz}}test!!!";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 7, "one parse node");
-  is(tree[0]+'', "test", "first text is correct");
-  is(tree[2]+'', "test!", "second text is correct")
-  is(tree[4]+'', "test!!", "third text is correct")
-  is(tree[6]+'', "test!!!", "last text is correct")
+  is(tree[0].text+'', "test", "first text is correct");
+  is(tree[2].text+'', "test!", "second text is correct")
+  is(tree[4].text+'', "test!!", "third text is correct")
+  is(tree[6].text+'', "test!!!", "last text is correct")
   is(tree[1].n, "foo", "first var is correct");
   is(tree[3].n, "bar", "second var is correct");
   is(tree[5].n, "baz", "third var is correct");
@@ -201,12 +201,12 @@ test("Parse Section", function() {
   var text = "a{{#foo}}b{{/foo}}c";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 3, "three nodes at base");
-  is(tree[0]+'', "a", "correct text in first node");
+  is(tree[0].text+'', "a", "correct text in first node");
   is(tree[1].hasOwnProperty('nodes'), true, "second node is a section");
   is(tree[1].tag, '#', "second node is a section");
   is(tree[1].n, "foo", "correct name for section");
-  is(tree[1].nodes[0]+'', "b", "correct text in section");
-  is(tree[2]+'', "c", "correct text in last node");
+  is(tree[1].nodes[0].text+'', "b", "correct text in section");
+  is(tree[2].text+'', "c", "correct text in last node");
 });
 
 test("Parse Indexes", function() {
@@ -220,12 +220,12 @@ test("Parse Negative Section", function() {
   var tree = Hogan.parse(Hogan.scan(text));
 
   is(tree.length, 3, "three nodes at base");
-  is(tree[0]+'', "a", "correct text in first node");
+  is(tree[0].text+'', "a", "correct text in first node");
   is(tree[1].hasOwnProperty('nodes'), true, "second node is a section");
   is(tree[1].tag, '^', "second node is a negative section");
   is(tree[1].n, "foo", "correct name for section");
-  is(tree[1].nodes[0]+'', "b", "correct text in section");
-  is(tree[2]+'', "c", "correct text in last node");
+  is(tree[1].nodes[0].text+'', "b", "correct text in section");
+  is(tree[2].text+'', "c", "correct text in last node");
 });
 
 test("Parse Nested Sections", function() {
@@ -237,7 +237,7 @@ test("Parse Nested Sections", function() {
   is(tree[0].n, "bar", "first section name is 'bar'");
   is(tree[0].nodes.length, 1, "first section contains one node.");
   is(tree[0].nodes[0].n, "foo", "correct name for nested section");
-  is(tree[0].nodes[0].nodes[0]+'', "c", "correct text in nested section");
+  is(tree[0].nodes[0].nodes[0].text+'', "c", "correct text in nested section");
 });
 
 test("Missing Closing Tag", function() {
@@ -352,7 +352,7 @@ test("Escaping", function() {
 test("Mustache Injection", function() {
   var text = "{{foo}}";
   var t = Hogan.compile(text);
-  s = t.render({foo:"{{{<42}}}"})
+  var s = t.render({foo:"{{{<42}}}"})
   is(s, "{{{&lt;42}}}", "Can't inject mustache");
 });
 
@@ -370,7 +370,7 @@ test("Amp No Escaping", function() {
   is(s, "< > <div> \' \" &", "input correctly not-escaped.");
 });
 
-test("Partial", function() {
+test("Partial Basic", function() {
   var partialText = "this is text from the partial--the magic number {{foo}} is from a variable";
   var p = Hogan.compile(partialText);
 
@@ -415,6 +415,9 @@ test("Negative Section", function() {
 
   s = t.render({foo: function() { return false; }});
   is(s, "This template BOO contains an inverted section.", "inverted sections with false returning method in context work");
+
+  s = t.render({foo: 0});
+  is(s, "This template BOO contains an inverted section.", "inverted sections with 0 returning method in context work");
 });
 
 test("Section Elision", function() {
@@ -428,6 +431,18 @@ test("Section Elision", function() {
 
   s = t.render({foo:false});
   is(s, "This template contains a section.", "sections with false context work");
+
+  s = t.render({foo:''});
+  is(s, "This template BOO contains a section.", "sections with empty string context work");
+
+  s = t.render({foo:true});
+  is(s, "This template BOO contains a section.", "sections with true context work");
+
+  s = t.render({foo: function() { return false; }});
+  is(s, "This template contains a section.", "sections with false returning method in context work");
+
+  s = t.render({foo: 0});
+  is(s, "This template contains a section.", "sections with 0 returning method in context work");
 });
 
 test("Section Object Context", function() {
@@ -470,7 +485,7 @@ test("Section Extensions", function() {
   is(tree[1].tag, "#", "_//|__foo node transformed to section");
   is(tree[1].n, "_//|__foo", "_//|__foo node transformed to section");
 
-  var t = Hogan.compile(text, options );
+  var t = Hogan.compile(text, options);
   var s = t.render({'_//|__foo':true});
   is(s, "Test bar", "Custom sections work");
 });
@@ -488,12 +503,15 @@ test("Section Extensions In Higher Order Sections", function() {
   var options = {sectionTags:[{o:'_foo', c:'foo'}, {o:'_baz', c:'baz'}]};
   var t = Hogan.compile(text, options);
   var context = {
-    "_foo": function (s) {
-      return "{{_baz}}" + s + "{{/baz}}";
+    "_baz": true,
+    "_foo": function () {
+      return function(s) {
+        return "{{_baz}}" + s + "{{/baz}}qux"
+      };
     }
   }
   var s = t.render(context);
-  is(s, "Test", "unprocessed test");
+  is(s, "Testbarqux", "unprocessed test");
 });
 
 test("Section Extensions In Lambda Replace Variable", function() {
@@ -501,12 +519,53 @@ test("Section Extensions In Lambda Replace Variable", function() {
   var options = {sectionTags:[{o:'_baz', c:'baz'}]};
   var t = Hogan.compile(text, options);
   var context = {
+    "_baz": true,
     "foo": function () {
-      return function() { "{{_baz}}" + s + "{{/baz}}"; };
+      return function() { return "{{_baz}}abcdef{{/baz}}"; };
     }
   }
   var s = t.render(context);
-  is(s, "Test", "unprocessed test");
+  is(s, "Testabcdef", "unprocessed test");
+});
+
+test("disableLambda option works on interpolation", function() {
+  var text = "Test{{foo}}";
+  var options = {disableLambda: true}
+  var t = Hogan.compile(text, options);
+  var context = {
+    "baz": true,
+    "foo": function () {
+      return function() { return "{{#baz}}abcdef{{/baz}}"; };
+    }
+  }
+
+  var msg = "";
+  try {
+    var s = t.render(context);
+  } catch (e) {
+    msg = e.message;
+  }
+  is(msg, "Lambda features disabled.", "unprocessed test");
+});
+
+test("disableLambda option works on sections", function() {
+  var text = "Test{{#foo}}{{/foo}}";
+  var options = {disableLambda: true}
+  var t = Hogan.compile(text, options);
+  var context = {
+    "baz": true,
+    "foo": function () {
+      return function() { return "{{#baz}}abcdef{{/baz}}"; };
+    }
+  }
+
+  var msg = "";
+  try {
+    var s = t.render(context);
+  } catch (e) {
+    msg = e.message;
+  }
+  is(msg, "Lambda features disabled.", "unprocessed test");
 });
 
 test("Mustache not reprocessed for method calls in interpolations", function() {
@@ -666,6 +725,142 @@ test("Mustache JS Triple Stache Alt Delimiter", function() {
   is(s, 'yeah {{foo}} hmm {{{bar}}}', 'triple stache inside alternate delimiter works.');
 });
 
+/* template inheritance */
+
+test("Parse a $ tag", function() {
+  var text = '{{$title}}Default title{{/title}}';
+  var tree = Hogan.parse(Hogan.scan(text));
+  is(tree[0].tag, "$", '$ should have correct tag name');
+  is(tree.length, 1, 'there should be one node at the top level');
+  is(tree[0].nodes.length, 1, 'there should be one child text node');
+});
+
+test("Default content", function() {
+  var text = '{{$title}}Default title{{/title}}';
+  var t = Hogan.compile(text);
+  var s = t.render();
+  is(s, 'Default title');
+});
+
+test("Default content renders variables", function() {
+  var text = '{{$foo}}default {{bar}} content{{/foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({bar: 'baz'});
+  is(s, 'default baz content', 'default content renders variables');
+});
+
+test("Default content renders triple stache variables", function() {
+  var text = '{{$foo}}default {{{bar}}} content{{/foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({bar: '<baz>'});
+  is(s, 'default <baz> content', 'default content renders triple stache variables');
+});
+
+test("Default content renders sections", function() {
+  var text = '{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({bar: {baz: 'qux'}});
+  is(s, 'default qux content', 'sections work');
+});
+
+test("Default content renders negative sections", function() {
+  var text = '{{$foo}}default{{^bar}}{{baz}}{{/bar}} content{{/foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({foo: {baz: 'qux'}});
+  is(s, 'default content', 'negative sections work');
+});
+
+test("Mustache injection in default content", function() {
+  var text = '{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}';
+  var t = Hogan.compile(text);
+  var s = t.render({bar: {baz: '{{qux}}'}});
+  is(s, 'default {{qux}} content', 'mustache tags are not injected.');
+});
+
+test("Default content rendered inside included templates", function(){
+  var include = Hogan.compile("{{$foo}}default content{{/foo}}");
+  var template = "{{<include}}{{/include}}";
+  var t = Hogan.compile(template);
+  var s = t.render({},{'include':include});
+  is(s, 'default content', 'default content from included template');
+});
+
+test("Overridden content", function() {
+  var text = '{{<super}}{{$title}}sub template title{{/title}}{{/super}}';
+  var super_template = '...{{$title}}Default title{{/title}}...';
+  var t = Hogan.compile(text);
+  var s = t.render({}, {"super": super_template});
+  is(s, '...sub template title...', 'renders overridden content');
+});
+
+test("Overridden partial", function() {
+  var partial = "{{$stuff}}...{{/stuff}}";
+  var template = "test {{<partial}}{{$stuff}}override{{/stuff}}{{/partial}}";
+  var t = Hogan.compile(template);
+  var s = t.render({}, {"partial": partial});
+  is(s, 'test override');
+});
+
+test("Two overridden partials with different content", function() {
+  var partial = "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|";
+  var template = "test {{<partial}}{{$stuff}}override1{{/stuff}}{{/partial}} " +
+                 "{{<partial}}{{$stuff}}override2{{/stuff}}{{/partial}}";
+  var t = Hogan.compile(template);
+  var s = t.render({}, {"partial": partial});
+  is(s, 'test |override1 default| |override2 default|');
+});
+
+test("Override one substitution but not the other", function() {
+  var partial = Hogan.compile("{{$stuff}}default one{{/stuff}}, {{$stuff2}}default two{{/stuff2}}");
+  var template = "{{<partial}}{{$stuff2}}override two{{/stuff2}}{{/partial}}";
+  var t = Hogan.compile(template);
+  var s = t.render({}, {"partial": partial});
+  is(s, 'default one, override two', 'overrides only one substitution');
+
+  var partial2 = Hogan.compile("{{$stuff}}new default one{{/stuff}}, {{$stuff2}}new default two{{/stuff2}}");
+  var s = t.render({}, {"partial": partial2});
+  is(s, 'new default one, override two', 'picks up changes to the partial dictionary');
+});
+
+test("Super templates behave identically to partials when called with no parameters", function() {
+  var partial = Hogan.compile("{{$foo}}default content{{/foo}}");
+  var t = Hogan.compile("{{>include}}|{{<include}}{{/include}}");
+  var s = t.render({}, {include:partial});
+  is(s, "default content|default content", "should be the partial rendered twice");
+});
+
+test("Recursion in inherited templates", function() {
+  var include = Hogan.compile("{{$foo}}default content{{/foo}} {{$bar}}{{<include2}}{{/include2}}{{/bar}}");
+  var include2 = Hogan.compile("{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}");
+  var t = Hogan.compile("{{<include}}{{$foo}}override{{/foo}}{{/include}}");
+  var s = t.render({}, {include: include, include2: include2});
+  is(s, "override include2 default content default content don't recurse", "matches expected recursive output");
+});
+
+test("Doesn't parse templates that have non-$ tags inside super template tags", function() {
+  var msg = "";
+  try {
+    Hogan.compile("{{<foo}}{{busted}}{{/foo}}");
+  } catch (e) {
+    msg = e.message;
+  }
+  is(msg, "Illegal content in < super tag.");
+})
+
+test("Allows text inside a super tag, but ignores it", function() {
+  var partial = Hogan.compile("{{$foo}}default content{{/foo}}");
+  var t = Hogan.compile("{{<include}} asdfasd asdfasdfasdf {{/include}}");
+  var s = t.render({}, {include: partial});
+  is(s, "default content", "should render without the text");
+});
+
+test("Ignores text inside super templates, but does parse $ tags", function() {
+  var partial = Hogan.compile("{{$foo}}default content{{/foo}}");
+  var t = Hogan.compile("{{<include}} asdfasd {{$foo}}hmm{{/foo}} asdfasdfasdf {{/include}}");
+  var s = t.render({}, {include: partial});
+  is(s, "hmm", "should render without the text");
+});
+
 /* Safety tests */
 
 test("Updates object state", function() {
@@ -737,6 +932,25 @@ test("Shoot Out Recurse", function() {
   is(s, expected, "Shootout Recurse compiled correctly");
 });
 
+test("Shoot Out Recurse string partial", function() {
+  var text = "{{name}}{{#kids}}{{>recursion}}{{/kids}}";
+  var t = Hogan.compile(text);
+  var s = t.render({
+                name: '1',
+                kids: [
+                  {
+                    name: '1.1',
+                    kids: [
+                      { name: '1.1.1', kids: [] }
+                    ]
+                  }
+                ]
+              }, { recursion: "{{name}}{{#kids}}{{>recursion}}{{/kids}}" });
+  var expected = "11.11.1.1";
+  is(s, expected, "Shootout Recurse string compiled correctly");
+});
+
+
 test("Shoot Out Filter", function() {
   var text = "{{#filter}}foo {{bar}}{{/filter}}";
   var t = Hogan.compile(text);
@@ -791,6 +1005,25 @@ test("Shoot Out Complex", function() {
   })
 
   is(s, expected, "Shootout Complex compiled correctly");
+});
+
+test("Stringified templates survive a round trip", function() {
+  var template = "{{<super}}{{$sub}}test{{/sub}}{{/super}}{{>include}}{{$default}}default content{{/default}}{{foo}}";
+  var superTemplate = Hogan.compile("super template");
+  var include = Hogan.compile("the include");
+
+  var compiled = Hogan.compile(template);
+  var compiledAsString = Hogan.compile(template, {asString: true});
+  eval('var fromString = new Hogan.Template(' + compiledAsString + ');');
+
+  var context = {
+    foo: 42
+  }
+  var partials = {
+    "super": Hogan.compile(superTemplate),
+    include: Hogan.compile(include)
+  }
+  is(compiled.render(context, partials), fromString.render(context, partials), "from string template renders the same as a compiled one");
 });
 
 $.each(['list'], function(i, name) {

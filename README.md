@@ -56,6 +56,34 @@ Why another templating library?
 Hogan.js was written to meet three templating library requirements: good
 performance, standalone template objects, and a parser API.
 
+## Compilation options
+
+The second argument to Hogan.compile is an options hash.
+```js
+var text = "my <%example%> template."
+Hogan.compile(text, {delimiters: '<% %>'});
+```
+
+There are current four valid options.
+
+asString: return the compiled template as a string. This feature is used
+by hulk to produce strings containing pre-compiled templates.
+
+sectionTags: allow custom tags that require opening and closing tags, and
+treat them as though they were section tags.
+
+```js
+var text = "my {{_foo}}example{{/foo}} template."
+Hogan.compile(text, { sectionTags: [{o: '_foo', c: 'foo'}]});
+```
+
+The value is an array of object with o and c fields that indicate names
+for custom section tags. The example above allows parsing of {{_foo}}{{/foo}}.
+
+delimiters: A string that overrides the default delimiters. Example: "<% %>".
+
+disableLambda: disables the higher-order sections / lambda-replace features of Mustache.
+
 ## Issues
 
 Have a bug? Please create an issue here on GitHub!
