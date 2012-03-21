@@ -1008,9 +1008,9 @@ test("Shoot Out Complex", function() {
 });
 
 test("Stringified templates survive a round trip", function() {
-  var template = "{{<super}}{{$sub}}test{{/sub}}{{/super}}{{>include}}{{$default}}default content{{/default}}{{foo}}";
-  var superTemplate = Hogan.compile("super template");
-  var include = Hogan.compile("the include");
+  var template = "{{<super}}{{$sub}}test{{/sub}}{{/super}}{{>include}}{{$default}}default content{{/default}} {{foo}}";
+  var superTemplate = Hogan.compile("super template ");
+  var include = Hogan.compile("the include ");
 
   var compiled = Hogan.compile(template);
   var compiledAsString = Hogan.compile(template, {asString: true});
@@ -1020,8 +1020,8 @@ test("Stringified templates survive a round trip", function() {
     foo: 42
   }
   var partials = {
-    "super": Hogan.compile(superTemplate),
-    include: Hogan.compile(include)
+    "super": superTemplate,
+    include: include
   }
   is(compiled.render(context, partials), fromString.render(context, partials), "from string template renders the same as a compiled one");
 });
