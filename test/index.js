@@ -408,7 +408,7 @@ test("Negative Section", function() {
   is(s, "This template BOO contains an inverted section.", "inverted sections with false context work");
 
   s = t.render({foo:''});
-  is(s, "This template BOO contains an inverted section.", "inverted sections with empty string context work");
+  is(s, "This template contains an inverted section.", "inverted sections with empty string context work");
 
   s = t.render({foo:true});
   is(s, "This template contains an inverted section.", "inverted sections with true context work");
@@ -417,7 +417,7 @@ test("Negative Section", function() {
   is(s, "This template BOO contains an inverted section.", "inverted sections with false returning method in context work");
 
   s = t.render({foo: 0});
-  is(s, "This template contains an inverted section.", "inverted sections with 0 returning method in context work");
+  is(s, "This template BOO contains an inverted section.", "inverted sections with 0 returning method in context work");
 });
 
 test("Section Elision", function() {
@@ -433,7 +433,7 @@ test("Section Elision", function() {
   is(s, "This template contains a section.", "sections with false context work");
 
   s = t.render({foo:''});
-  is(s, "This template contains a section.", "sections with empty string context work");
+  is(s, "This template BOO contains a section.", "sections with empty string context work");
 
   s = t.render({foo:true});
   is(s, "This template BOO contains a section.", "sections with true context work");
@@ -442,7 +442,7 @@ test("Section Elision", function() {
   is(s, "This template contains a section.", "sections with false returning method in context work");
 
   s = t.render({foo: 0});
-  is(s, "This template BOO contains a section.", "sections with 0 returning method in context work");
+  is(s, "This template contains a section.", "sections with 0 returning method in context work");
 });
 
 test("Section Object Context", function() {
