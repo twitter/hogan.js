@@ -13,6 +13,10 @@
  *  limitations under the License.
  */
 
+// A wrapper for compatibility with Mustache.js, quirks and all
+
+
+
 var Hogan = {};
 
 (function (Hogan, useArrayBuffer) {
@@ -239,3 +243,50 @@ var Hogan = {};
 
 })(typeof exports !== 'undefined' ? exports : Hogan);
 
+
+
+
+var Mustache = (function (Hogan) {
+
+  // Mustache.js has non-spec partial context behavior
+  function mustachePartial(name, context, partials, indent) {
+    var partialScope = this.f(name, context, partials, 0);
+    var cx = context;
+    if (partialScope) {
+      cx = cx.concat(partialScope);
+    }
+
+    return Hogan.Template.prototype.rp.call(this, name, cx, partials, indent);
+  }
+
+  var HoganTemplateWrapper = function(renderFunc, text, compiler){
+    this.rp = mustachePartial;
+    Hogan.Template.call(this, renderFunc, text, compiler);
+  };
+  HoganTemplateWrapper.prototype = Hogan.Template.prototype;
+
+  // Add a wrapper for Hogan's generate method. Mustache and Hogan keep
+  // separate caches, and Mustache returns wrapped templates.
+  var wrapper;
+  var HoganWrapper = function(){
+    this.cache = {};
+    this.generate = function(code, text, options) {
+      return new HoganTemplateWrapper(new Function('c', 'p', 'i', code), text, wrapper);
+    }
+  };
+  HoganWrapper.prototype = Hogan;
+  wrapper = new HoganWrapper();
+
+  return {
+    to_html: function(text, data, partials, sendFun) {
+      var template = wrapper.compile(text);
+      var result = template.render(data, partials);
+      if (!sendFun) {
+        return result;
+      }
+
+      sendFun(result);
+    }
+  }
+
+})(Hogan);

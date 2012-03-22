@@ -64,6 +64,10 @@ wrappers.forEach(function(wrapper) {
 });
 
 // Also release Hogan.Template on its own.
-var templateTarget = distPath + 'template-' + version + '.js';
-fs.writeFileSync(templateTarget, read(__dirname + '/../lib/template.js'));
-uglify(templateTarget, distPath + 'template-' + version + '.min.js');
+wrappers.forEach(function(wrapper) {
+  var tail = path.basename(wrapper, '.mustache');
+  var target = distPath + 'hogan.template-' + version + '.' + tail;
+  var uglified =  distPath + 'hogan.template-' + version + '.min.' + tail;
+  fs.writeFileSync(target, Hogan.compile(read(wrapper)).render({template: context.template}));
+  uglify(target, uglified);
+});
