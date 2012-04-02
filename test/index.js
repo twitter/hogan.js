@@ -861,6 +861,21 @@ test("Ignores text inside super templates, but does parse $ tags", function() {
   is(s, "hmm", "should render without the text");
 });
 
+test("Issue #62: partial references inside substitutions should work", function () {
+  var parent = "This is a parent template. {{$content}}Child content goes here{{/content}} Ending the parent template.";
+  var main = "Main template start. {{< parent}}{{$content}}This content includes a partial: {{> include}}{{/content}}{{/ parent}} Main template end.";
+  var include = "INCLUDED CONTENT!";
+
+  var templates = {
+    parent: Hogan.compile(parent),
+    main: Hogan.compile(main),
+    include: Hogan.compile(include)
+  };
+
+  is(templates.main.partials.include0, undefined, "partial reference from subustitution is not defined.");
+  is(templates.main.render({}, templates), "Main template start. This is a parent template. This content includes a partial: INCLUDED CONTENT! Ending the parent template. Main template end.", "Included content works inside substitution.");
+});
+
 /* Safety tests */
 
 test("Updates object state", function() {
@@ -1024,6 +1039,14 @@ test("Stringified templates survive a round trip", function() {
     include: include
   }
   is(compiled.render(context, partials), fromString.render(context, partials), "from string template renders the same as a compiled one");
+});
+
+test("Stringified template bug report", function() {
+  var template = '<div class="comment row" id="comment-{{id}}"><div class="comment-body">{{body}}</div><div class="comment-info"><div class="comment-metadata">{{timestamp_created}}</div><div class="comment-by"><a href="/by/{{poster_username}}">{{poster_username}}<img src="{{poster_image}}"/></a></div></div></div>';
+  var compiled = Hogan.compile(template);
+  var compiledAsString = Hogan.compile(template, {asString: true});
+  eval('var fromString = new Hogan.Template(' + compiledAsString + ');');
+  is(compiled.render(), fromString.render(), "bug report works");
 });
 
 $.each(['list'], function(i, name) {
