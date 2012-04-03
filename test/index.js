@@ -874,6 +874,19 @@ test("Issue #62: partial references inside substitutions should work", function 
 
   is(templates.main.partials.include0, undefined, "partial reference from subustitution is not defined.");
   is(templates.main.render({}, templates), "Main template start. This is a parent template. This content includes a partial: INCLUDED CONTENT! Ending the parent template. Main template end.", "Included content works inside substitution.");
+
+  eval('var parentFromString = new Hogan.Template(' + Hogan.compile(parent, {asString: true}) + ');');
+  eval('var mainFromString = new Hogan.Template(' + Hogan.compile(main, {asString: true}) + ');');
+  eval('var includeFromString = new Hogan.Template(' + Hogan.compile(include, {asString: true}) + ');');
+
+  // now test compiling these as a string
+  var templatesAsString = {
+    parent: parentFromString,
+    main: mainFromString,
+    include: includeFromString
+  };
+
+  is(templates.main.render({}, templates), templatesAsString.main.render({}, templates))
 });
 
 /* Safety tests */
