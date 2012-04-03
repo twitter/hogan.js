@@ -886,7 +886,7 @@ test("Issue #62: partial references inside substitutions should work", function 
     include: includeFromString
   };
 
-  is(templates.main.render({}, templates), templatesAsString.main.render({}, templates))
+  is(templates.main.render({}, templates), templatesAsString.main.render({}, templatesAsString))
 });
 
 /* Safety tests */
