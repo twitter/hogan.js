@@ -15,13 +15,15 @@
  *  limitations under the License.
  */
 
-var hogan = require('../lib/hogan.js'),
-    path = require('path'),
-    fs = require('fs');
+// dependencies
+var hogan = require('../lib/hogan.js')
+  , path  = require('path')
+  , fs    = require('fs');
 
-var specials = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\'],
-    specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g'),
-    templates;
+// locals
+var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
+  , specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g')
+  , templates;
 
 
 // Escape special regexp characters
@@ -32,13 +34,13 @@ function esc(text) {
 
 // Check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
-  var usage = 'USAGE: hulk ./templates/*.mustaches\n' +
-              'NOTE:  hulk supports the "*" wildcard and allows you to target specific extensions too',
+  var usage = '\033[36mUSAGE:\033[39m hulk ./templates/*.mustaches\n' +
+              '\033[36mNOTE:\033[39m  hulk supports the "*" wildcard and allows you to target specific extensions too',
       files = [];
 
   if (!args.length) {
     console.log(usage);
-    process.exit(-1);
+    process.exit(0);
   }
 
   args.forEach(function (arg) {
