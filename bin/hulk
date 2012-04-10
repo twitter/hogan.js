@@ -25,8 +25,8 @@ var hogan  = require('../lib/hogan.js')
 // locals
 var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
   , specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g')
-  , options        = { 'wrapper' : String, 'outputdir': path }
-  , shortHand      = { 'w': ['--wrapper'], 'o': ['--outputdir'] }
+  , options        = { 'wrapper' : String, 'outputdir': path, 'help': true, 'version': true }
+  , shortHand      = { 'w': ['--wrapper'], 'o': ['--outputdir'], 'h': ['--help'], 'v': ['--version'] }
   , templates;
 
 // options
@@ -41,11 +41,19 @@ function esc(text) {
 
 // check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
-  var usage = '\033[36mUSAGE:\033[39m hulk ./templates/*.mustaches\n' +
-              '\033[36mNOTE:\033[39m  hulk supports the "*" wildcard and allows you to target specific extensions too',
+  var usage = '\n\033[36mUSAGE:\033[39m    hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n\n' +
+              '\033[36mOPTIONS:\033[39m  [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
+              '          [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
+              '\033[36mEXAMPLE:\033[39m  hulk --wrapper amd ./templates/*.mustache\n\n' +
+              '\033[36mNOTE:\033[39m     hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
 
-  if (!args.length) {
+  if (options.version) {
+    console.log(require('../package.json').version);
+    process.exit(0);
+  }
+
+  if (!args.length || options.help) {
     console.log(usage);
     process.exit(0);
   }
@@ -114,6 +122,6 @@ templates = extractFiles(options.argv.remain)
 
 
 // output templates
-if (!templates.length || options.outputdir) return;
+if (!templates.length || options.outputdir) process.exit(0);;
 if (!options.wrapper) console.log('var templates = {};');
 console.log(templates.join('\n'));
