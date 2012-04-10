@@ -122,6 +122,6 @@ templates = extractFiles(options.argv.remain)
 
 
 // output templates
-if (!templates.length || options.outputdir) process.exit(0);;
+if (!templates.length || options.outputdir) process.exit(0);
 if (!options.wrapper) console.log('var templates = {};');
 console.log(templates.join('\n'));
