@@ -38,6 +38,8 @@ function esc(text) {
   return text.replace(specialsRegExp, '\\$1');
 }
 
+
+// cyan function for rob
 function cyan(text) {
   return '\n\033[36m' + text + '\033[39m';
 }
