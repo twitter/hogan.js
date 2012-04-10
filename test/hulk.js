@@ -1,5 +1,8 @@
 var exec   = require('child_process').exec
   , assert = require('assert')
+  , fs     = require('fs')
+  , rimraf = require('rimraf')
+  , path   = require('path')
   , Hogan  = require('../lib/hogan.js');
 
 
@@ -11,7 +14,7 @@ exec('node bin/hulk', function (error, stdout, stderr) {
   assert(/NOTE/.test(stdout), 'has NOTE text about wildcard');
 })
 
-// wrapper options: amd
+// wrapper options: --wrapper amd
 exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, stderr) {
   if (error) throw error;
   var define = function (name, template) {
@@ -21,6 +24,14 @@ exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, st
     assert(typeof template.r == 'function', 'defined a templates.list.r function');
   }
   eval(stdout);
+});
+
+// wrapper options: --outputdir
+exec('node bin/hulk --outputdir dist/foo test/templates/*', function (error, stdout, stderr) {
+  if (error) throw error;
+  assert(path.existsSync('dist/foo'), 'dist/foo directory created');
+  assert(path.existsSync('dist/foo/list.js'), 'dist/foo/list.js file created');
+  rimraf.sync('dist');
 });
 
 // templates wildcard
