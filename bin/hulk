@@ -38,14 +38,18 @@ function esc(text) {
   return text.replace(specialsRegExp, '\\$1');
 }
 
+function cyan(text) {
+  return '\n\033[36m' + text + '\033[39m';
+}
+
 
 // check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
-  var usage = '\n\033[36mUSAGE:\033[39m    hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n\n' +
-              '\033[36mOPTIONS:\033[39m  [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
-              '          [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
-              '\033[36mEXAMPLE:\033[39m  hulk --wrapper amd ./templates/*.mustache\n\n' +
-              '\033[36mNOTE:\033[39m     hulk supports the "*" wildcard and allows you to target specific extensions too\n',
+  var usage = cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n' +
+              cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
+              '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n' +
+              cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n' +
+              cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
 
   if (options.version) {
