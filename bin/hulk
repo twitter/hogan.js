@@ -41,16 +41,17 @@ function esc(text) {
 
 // cyan function for rob
 function cyan(text) {
-  return '\n\033[36m' + text + '\033[39m';
+  return '\033[36m' + text + '\033[39m';
 }
 
 
 // check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
-  var usage = cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n' +
+  var usage = '\n' +
+              cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n\n' +
               cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
-              '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n' +
-              cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n' +
+              '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
+              cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n\n' +
               cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
 
