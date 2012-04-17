@@ -59,6 +59,7 @@ performance, standalone template objects, and a parser API.
 ## Compilation options
 
 The second argument to Hogan.compile is an options hash.
+
 ```js
 var text = "my <%example%> template."
 Hogan.compile(text, {delimiters: '<% %>'});
