@@ -12,18 +12,17 @@ exec('node bin/hulk', function (error, stdout, stderr) {
   assert(typeof stdout == 'string', 'it should have help text.');
   assert(/USAGE/.test(stdout), 'has USAGE text');
   assert(/NOTE/.test(stdout), 'has NOTE text about wildcard');
-})
+});
 
 // wrapper options: --wrapper amd
 exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, stderr) {
   if (error) throw error;
-  var define = function (name, dep, template) {
-    template = template();
-    assert(/list$/.test(name), 'name path ends in list');
-    assert(dep[0] === 'hogan.js', 'defined a templates.list object');
+  var define = function (dep, template) {
+    template = template(Hogan);
+    assert(dep[0] === 'hogan', 'defined a templates.list object');
     assert(typeof template   == 'object', 'defined a templates.list object');
     assert(typeof template.r == 'function', 'defined a templates.list.r function');
-  }
+  };
   eval(stdout);
 });
 
