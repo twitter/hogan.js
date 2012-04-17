@@ -19,7 +19,7 @@ exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, st
   if (error) throw error;
   var define = function (dep, template) {
     template = template(Hogan);
-    assert(dep[0] === 'hogan', 'defined a templates.list object');
+    assert(dep[0] === 'hogan', 'Make sure the "hogan" dependency is passed');
     assert(typeof template   == 'object', 'defined a templates.list object');
     assert(typeof template.r == 'function', 'defined a templates.list.r function');
   };
