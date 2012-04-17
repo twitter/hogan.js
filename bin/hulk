@@ -101,7 +101,7 @@ function removeByteOrderMark(text) {
 function wrap(file, name, openedFile) {
   switch(options.wrapper) {
     case "amd":
-      return 'define([ "hogan.js" ], function(){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
+      return 'define([ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
     default:
       return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
   }
