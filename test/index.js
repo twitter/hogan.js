@@ -801,6 +801,10 @@ test("Override partial with newlines", function() {
   var t = Hogan.compile(template);
   var s = t.render({}, {"partial": partial});
   is(s, "peaked\n\n:(\n");
+
+  var compiledAsString = Hogan.compile(template, {asString: true});
+  eval('var fromString = new Hogan.Template(' + compiledAsString + ', template, Hogan);');
+  is(s, fromString.render({}, {"partial": partial}));
 });
 
 test("Inherit indentation when overriding a partial", function() {
