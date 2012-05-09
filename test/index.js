@@ -795,6 +795,22 @@ test("Two overridden partials with different content", function() {
   is(s, 'test |override1 default| |override2 default|');
 });
 
+test("Override partial with newlines", function() {
+  var partial = "{{$ballmer}}peaking{{/ballmer}}";
+  var template = "{{<partial}}{{$ballmer}}\npeaked\n\n:(\n{{/ballmer}}{{/partial}}";
+  var t = Hogan.compile(template);
+  var s = t.render({}, {"partial": partial});
+  is(s, "peaked\n\n:(\n");
+});
+
+test("Inherit indentation when overriding a partial", function() {
+  var partial = "stop:\n  {{$nineties}}collaborate and listen{{/nineties}}";
+  var template = "{{<partial}}{{$nineties}}hammer time{{/nineties}}{{/partial}}";
+  var t = Hogan.compile(template);
+  var s = t.render({}, {"partial": partial});
+  is(s, "stop:\n  hammer time");
+});
+
 test("Override one substitution but not the other", function() {
   var partial = Hogan.compile("{{$stuff}}default one{{/stuff}}, {{$stuff2}}default two{{/stuff2}}");
   var template = "{{<partial}}{{$stuff2}}override two{{/stuff2}}{{/partial}}";
