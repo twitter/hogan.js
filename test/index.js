@@ -583,17 +583,6 @@ test("Mustache is reprocessed for lambdas in interpolations", function() {
   };
   var s = t.render(context);
   is(s, "text with processing of 42 inside", "the return value of lambdas should be processed mustache.");
-
-  context = {
-    bar: "<b>42</b>",
-    foo: function() {
-      return function() {
-        return "processing of {{{bar}}}";
-      };
-    }
-  };
-  s = t.render(context);
-  is(s, "text with processing of <b>42</b> inside", "the return value of lambdas should be processed mustache, including triple-stache.");
 });
 
 test("Nested Section", function() {
