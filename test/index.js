@@ -1113,5 +1113,21 @@ test("Lambda expression in inherited template subsections", function() {
     var template = Hogan.compile(text);
 
     var result = template.render({lambda: lambda}, {partial: Hogan.compile(partial)});
-    is(result, 'altered child1 - altered parent2', 'Lambda replacement failed with template inheritance');
+    is(result, 'altered child1 - altered parent2', 'Lambda replacement works correctly with template inheritance');
+});
+
+test("Implicit iterator lambda evaluation", function () {
+    var lambda = function() {
+        return function() {
+            return 'evaluated'
+        }
+    };
+
+    var list = [lambda];
+
+    var text = '{{#list}}{{.}}{{/list}}';
+    var template = Hogan.compile(text);
+
+    var result = template.render({list: list});
+    is(result, 'evaluated', '{{.}} lambda correctly evaluated');
 });
