@@ -33,6 +33,7 @@ clean:
 #
 release: clean
 	@ echo "Creating a new version of Hogan."
+	@ mkdir dist
 	@ node tools/release.js
 	@ mkdir -p web/builds/$(VERSION)
 	@ cp dist/*.* web/builds/$(VERSION)/.
