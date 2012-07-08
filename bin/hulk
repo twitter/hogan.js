@@ -115,7 +115,7 @@ function wrap(file, name, openedFile) {
       return 'define('+ (!options.outputdir ? '"' + path.join(path.dirname(file), name) + '", ' : '') + '[ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
     default:
       return (!!options.variable ? options.variable : 'templates') + 
-              '.["' + name + '"] = new Hogan.Template(' + 
+              '["' + name + '"] = new Hogan.Template(' + 
               hogan.compile(openedFile, { asString: 1 }) + ');';
   }
 }
