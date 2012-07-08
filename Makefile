@@ -28,12 +28,17 @@ benchmark:
 
 clean:
 	@ rm -rf dist/*
+
+# Dist	
+dist:
+	@ mkdir dist
+	@ node tools/release.js
+	
 #
 # Make a new version of Hogan from the current dev version.
 #
-release: clean
+release: clean dist
 	@ echo "Creating a new version of Hogan."
-	@ node tools/release.js
 	@ mkdir -p web/builds/$(VERSION)
 	@ cp dist/*.* web/builds/$(VERSION)/.
 #
