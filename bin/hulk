@@ -25,8 +25,22 @@ var hogan  = require('../lib/hogan.js')
 // locals
 var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
   , specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g')
-  , options        = { 'wrapper' : String, 'outputdir': path, 'help': true, 'version': true }
-  , shortHand      = { 'w': ['--wrapper'], 'o': ['--outputdir'], 'h': ['--help'], 'v': ['--version'] }
+  , options        = { 
+    'namespace': String, 
+    'outputdir': path, 
+    'variable': String, 
+    'wrapper': String, 
+    'version': true,
+    'help': true
+    }
+  , shortHand      = { 
+    'n': ['--namespace'],
+    'o': ['--outputdir'], 
+    'v': ['--variable'], 
+    'w': ['--wrapper'], 
+    'h': ['--help'], 
+    'v': ['--version']
+    }
   , templates;
 
 // options
@@ -48,9 +62,11 @@ function cyan(text) {
 // check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
   var usage = '\n' +
-              cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n\n' +
+              cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] [--namespace namespace] [--variable variable] FILES\n\n' +
               cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
               '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
+              '         [-n, --namespace] :: prepend string to template names\n\n' +
+              '         [-v, --variable] :: variable name for non-amd wrapper\n\n' +
               cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n\n' +
               cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
