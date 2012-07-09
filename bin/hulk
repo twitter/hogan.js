@@ -119,7 +119,10 @@ function wrap(file, name, openedFile) {
     case "amd":
       return 'define('+ (!options.outputdir ? '"' + path.join(path.dirname(file), name) + '", ' : '') + '[ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
     default:
-      return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
+      return (options.variable || 'templates') 
+        + '["' + name + '"] = new Hogan.Template(' 
+        + hogan.compile(openedFile, { asString: 1 }) 
+        + ');';
   }
 }
 
@@ -128,12 +131,17 @@ if (options.outputdir) {
   mkderp.sync(options.outputdir);
 }
 
+// Prepend namespace to template name
+function namespace(name) {
+    return (options.namespace || '') + name;
+}
+
 // write a template foreach file that matches template extension
 templates = extractFiles(options.argv.remain)
   .map(function (file) {
     var openedFile = fs.readFileSync(file, 'utf-8'), name;
     if (!openedFile) return;
-    name = path.basename(file).replace(/\..*$/, '');
+    name = namespace(path.basename(file).replace(/\..*$/, ''));
     openedFile = removeByteOrderMark(openedFile.trim());
     openedFile = wrap(file, name, openedFile);
     if (!options.outputdir) return openedFile;
@@ -146,5 +154,8 @@ templates = extractFiles(options.argv.remain)
 
 // output templates
 if (!templates.length || options.outputdir) process.exit(0);
-if (!options.wrapper) console.log('var templates = {};');
+if (!options.wrapper) {
+  var vn = options.variable || 'templates';
+  console.log('if (!!!' + vn + ') ' + vn + ' = {};');
+}
 console.log(templates.join('\n'));
