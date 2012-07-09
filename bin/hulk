@@ -25,8 +25,22 @@ var hogan  = require('../lib/hogan.js')
 // locals
 var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
   , specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g')
-  , options        = { 'wrapper' : String, 'outputdir': path, 'help': true, 'version': true }
-  , shortHand      = { 'w': ['--wrapper'], 'o': ['--outputdir'], 'h': ['--help'], 'v': ['--version'] }
+  , options        = { 
+    'namespace': String, 
+    'outputdir': path, 
+    'variable': String, 
+    'wrapper': String, 
+    'version': true,
+    'help': true
+    }
+  , shortHand      = { 
+    'n': ['--namespace'],
+    'o': ['--outputdir'], 
+    'v': ['--variable'], 
+    'w': ['--wrapper'], 
+    'h': ['--help'], 
+    'v': ['--version']
+    }
   , templates;
 
 // options
@@ -48,9 +62,11 @@ function cyan(text) {
 // check for dirs and correct ext (<3 for windows)
 function extractFiles(args) {
   var usage = '\n' +
-              cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] FILES\n\n' +
+              cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] [--namespace namespace] [--variable variable] FILES\n\n' +
               cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
               '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
+              '         [-n, --namespace] :: prepend string to template names\n\n' +
+              '         [-v, --variable]  :: variable name for non-amd wrapper\n\n' +
               cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n\n' +
               cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
@@ -103,7 +119,10 @@ function wrap(file, name, openedFile) {
     case "amd":
       return 'define('+ (!options.outputdir ? '"' + path.join(path.dirname(file), name) + '", ' : '') + '[ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
     default:
-      return 'templates.' + name + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
+      return (options.variable || 'templates') 
+        + '["' + name + '"] = new Hogan.Template(' 
+        + hogan.compile(openedFile, { asString: 1 }) 
+        + ');';
   }
 }
 
@@ -112,12 +131,17 @@ if (options.outputdir) {
   mkderp.sync(options.outputdir);
 }
 
+// Prepend namespace to template name
+function namespace(name) {
+    return (options.namespace || '') + name;
+}
+
 // write a template foreach file that matches template extension
 templates = extractFiles(options.argv.remain)
   .map(function (file) {
     var openedFile = fs.readFileSync(file, 'utf-8'), name;
     if (!openedFile) return;
-    name = path.basename(file).replace(/\..*$/, '');
+    name = namespace(path.basename(file).replace(/\..*$/, ''));
     openedFile = removeByteOrderMark(openedFile.trim());
     openedFile = wrap(file, name, openedFile);
     if (!options.outputdir) return openedFile;
@@ -130,5 +154,8 @@ templates = extractFiles(options.argv.remain)
 
 // output templates
 if (!templates.length || options.outputdir) process.exit(0);
-if (!options.wrapper) console.log('var templates = {};');
+if (!options.wrapper) {
+  var vn = options.variable || 'templates';
+  console.log('if (!!!' + vn + ') ' + vn + ' = {};');
+}
 console.log(templates.join('\n'));
