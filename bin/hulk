@@ -66,7 +66,7 @@ function extractFiles(args) {
               cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
               '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
               '         [-n, --namespace] :: prepend string to template names\n\n' +
-              '         [-v, --variable] :: variable name for non-amd wrapper\n\n' +
+              '         [-v, --variable]  :: variable name for non-amd wrapper\n\n' +
               cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n\n' +
               cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
