@@ -30,8 +30,8 @@ exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, st
 // wrapper options: --outputdir
 exec('node bin/hulk --outputdir dist/foo test/templates/*', function (error, stdout, stderr) {
   if (error) throw error;
-  assert(path.existsSync('dist/foo'), 'dist/foo directory created');
-  assert(path.existsSync('dist/foo/list.js'), 'dist/foo/list.js file created');
+  assert(fs.existsSync('dist/foo'), 'dist/foo directory created');
+  assert(fs.existsSync('dist/foo/list.js'), 'dist/foo/list.js file created');
   rimraf.sync('dist');
 });
 
