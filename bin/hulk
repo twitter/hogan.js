@@ -15,12 +15,14 @@
  *  limitations under the License.
  */
 
+
 // dependencies
 var hogan  = require('../lib/hogan.js')
   , path   = require('path')
   , nopt   = require('nopt')
   , mkderp = require('mkdirp')
   , fs     = require('fs');
+
 
 // locals
 var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
@@ -42,6 +44,7 @@ var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}',
     'v': ['--version']
     }
   , templates;
+
 
 // options
 options = nopt(options, shortHand);
@@ -85,6 +88,7 @@ function extractFiles(args) {
 
     if (/\*/.test(arg)) {
       arg = arg.split('*');
+      if (fs.statSync(arg[0]).isDirectory()) return files;
       return files = files.concat(
         fs.readdirSync(arg[0] || '.')
           .map(function (f) {
@@ -96,7 +100,7 @@ function extractFiles(args) {
       );
     }
 
-    files.push(arg);
+    if (!fs.statSync(arg).isDirectory()) files.push(arg);
 
   })
 
@@ -126,15 +130,18 @@ function wrap(file, name, openedFile) {
   }
 }
 
+
 // write the directory
 if (options.outputdir) {
   mkderp.sync(options.outputdir);
 }
 
+
 // Prepend namespace to template name
 function namespace(name) {
     return (options.namespace || '') + name;
 }
+
 
 // write a template foreach file that matches template extension
 templates = extractFiles(options.argv.remain)
@@ -145,7 +152,9 @@ templates = extractFiles(options.argv.remain)
     openedFile = removeByteOrderMark(openedFile.trim());
     openedFile = wrap(file, name, openedFile);
     if (!options.outputdir) return openedFile;
-    fs.writeFileSync(path.join(options.outputdir, name + '.js'), openedFile);
+    var vn = options.variable || 'templates';
+    fs.writeFileSync(path.join(options.outputdir, name + '.js')
+      , 'if (!!!' + vn + ') var ' + vn + ' = {};\n' + openedFile);
   })
   .filter(function (t) {
     return t;
@@ -156,6 +165,6 @@ templates = extractFiles(options.argv.remain)
 if (!templates.length || options.outputdir) process.exit(0);
 if (!options.wrapper) {
   var vn = options.variable || 'templates';
-  console.log('if (!!!' + vn + ') ' + vn + ' = {};');
+  console.log('if (!!!' + vn + ') var ' + vn + ' = {};');
 }
 console.log(templates.join('\n'));
