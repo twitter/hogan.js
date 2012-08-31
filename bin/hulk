@@ -88,11 +88,10 @@ function extractFiles(args) {
 
     if (/\*/.test(arg)) {
       arg = arg.split('*');
-      if (!fs.statSync(arg[0]).isFile()) return files;
       return files = files.concat(
         fs.readdirSync(arg[0] || '.')
           .map(function (f) {
-            return new RegExp(esc(arg[1]) + '$').test(f) && path.join(arg[0], f);
+            return new RegExp(esc(arg[1]) + '$').test(f) && fs.statSync(path.join(arg[0], f)).isFile();
           })
           .filter(function (f) {
             return f;
