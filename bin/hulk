@@ -91,7 +91,8 @@ function extractFiles(args) {
       return files = files.concat(
         fs.readdirSync(arg[0] || '.')
           .map(function (f) {
-            return new RegExp(esc(arg[1]) + '$').test(f) && fs.statSync(path.join(arg[0], f)).isFile();
+            var file = path.join(arg[0], f);
+            return new RegExp(esc(arg[1]) + '$').test(f) && fs.statSync(file).isFile() && file;
           })
           .filter(function (f) {
             return f;
