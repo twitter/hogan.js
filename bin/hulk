@@ -88,7 +88,7 @@ function extractFiles(args) {
 
     if (/\*/.test(arg)) {
       arg = arg.split('*');
-      if (fs.statSync(arg[0]).isDirectory()) return files;
+      if (!fs.statSync(arg[0]).isFile()) return files;
       return files = files.concat(
         fs.readdirSync(arg[0] || '.')
           .map(function (f) {
@@ -100,7 +100,7 @@ function extractFiles(args) {
       );
     }
 
-    if (!fs.statSync(arg).isDirectory()) files.push(arg);
+    if (fs.statSync(arg).isFile()) files.push(arg);
 
   })
 
