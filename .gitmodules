@@ -7,3 +7,6 @@
 [submodule "test/qunit"]
 	path = test/qunit
 	url = git://github.com/jquery/qunit.git
+[submodule "test/mustache.java"]
+	path = test/mustache.java
+	url = https://github.com/spullara/mustache.java
