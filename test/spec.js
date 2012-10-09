@@ -16,6 +16,7 @@
 var Hogan = Hogan || require('../lib/hogan');
 var doc = this["document"];
 var fs = require('fs');
+var path = require('path');
 
 var passed = 0;
 var failed = 0;
@@ -44,7 +45,7 @@ function runTest(tests) {
   });
 }
 
-var testDir = './test/spec/specs';
+var testDir = path.join(__dirname, 'spec/specs');
 var files = fs.readdirSync(testDir)
               .filter(function(f) { return f.indexOf('.json') > 0; })
               .map(function(f) { return testDir + '/' + f});
