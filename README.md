@@ -105,6 +105,21 @@ And constructed with the following guidelines:
 
 For more information on semantic versioning, please visit http://semver.org/.
 
+## Testing
+
+To run the tests you first need to update all git submodules.
+
+    $ git submodule init
+    $ git submodule update
+
+Unit tests are written using [QUnit](http://qunitjs.com/). To run them, open `test/index.html`
+in a browser.
+
+Use [node](http://nodejs.org/) to run all tests from the
+[mustache spec](https://github.com/mustache/spec).
+
+    $ node test/spec.js
+
 ## Authors
 
 **Robert Sayre**
