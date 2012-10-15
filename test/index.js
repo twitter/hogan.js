@@ -1214,7 +1214,7 @@ test("Method call has correct 'this' and value argument", function() {
 });
 
 test("Section list and list index passed to method call", function() {
-  var text = '{#names}{^first}, {/first}{.}{/names} : {#numbers}{.}{^last}, {/last}{/numbers}';
+  var text = '{#names}{^first}, {/}{.}{/names} : {#numbers}{.}{^last}, {/}{/numbers}';
   var t = Hogan.compile(text, { delimiters: '{ }' });
   var context = {
     names: ['Larry', 'Moe', 'Curly'],
@@ -1243,4 +1243,29 @@ test("Partials inherit full context stack", function() {
       },
       s = t.render(context, partials);
   is(s, "I can see this. And this too.", "Partials have access to top of context stack and bottom");
+});
+
+test("Piped Helpers", function() {
+  var text = "{{timestamp | iso8601Date}} {{numbers|sum}}",
+      t = Hogan.compile(text, { enableHelpers: true }),
+
+      context = {
+
+        timestamp: 0,
+        iso8601Date: function(timestamp) {
+          return new Date(timestamp).toISOString();
+        },
+
+        numbers: [1,2,3,4],
+        sum: function(arr) {
+          var sum = 0;
+          for (var i=0,len=arr.length; i<len; i++) {
+            sum += arr[i];
+          }
+          return sum;
+        }
+      },
+
+      s = t.render(context);
+  is(s, "1970-01-01T00:00:00.000Z 10", "The result of one method call may be piped into another method call");
 });
