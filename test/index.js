@@ -1119,7 +1119,7 @@ test("Lambda expression in inherited template subsections", function() {
 test("Implicit iterator lambda evaluation", function () {
     var lambda = function() {
         return function() {
-            return 'evaluated'
+            return '{{evaluated}}'
         }
     };
 
@@ -1128,7 +1128,18 @@ test("Implicit iterator lambda evaluation", function () {
     var text = '{{#list}}{{.}}{{/list}}';
     var template = Hogan.compile(text);
 
-    var result = template.render({list: list});
+    var result = template.render({list: list, evaluated:'evaluated'});
+    is(result, 'evaluated', '{{.}} lambda correctly evaluated');
+});
+
+test("Implicit iterator lambda evaluation w/ fixMethodCalls option", function () {
+    var lambda = function() { return '{{evaluated}}' };
+    var list = [lambda];
+
+    var text = '{{#list}}{{.}}{{/list}}';
+    var template = Hogan.compile(text, { fixMethodCalls: true });
+
+    var result = template.render({list: list, evaluated:'evaluated'});
     is(result, 'evaluated', '{{.}} lambda correctly evaluated');
 });
 
@@ -1145,4 +1156,116 @@ test("Lambda expression in included partial templates", function() {
 
     var result = template.render({lambda: lambda}, {partial: Hogan.compile(partial), parent: Hogan.compile(parent)});
     is(result, 'changed test2', 'Lambda expression in included partial templates');
+});
+
+test("Method call chaining using dot notation", function() {
+  var src = "{{method1.method2.method3}}",
+      context = {
+        method1: function() {
+          return {
+            method2: function() {
+              return {
+                method3: function() {
+                    return 'test';
+                }
+              };
+            }
+          };
+        }
+      },
+      result = Hogan.compile(src).render(context);
+  is(result, "test", 'Dot notation works to chain method calls');
+});
+
+test("Method call has correct 'this' and value argument", function() {
+    var src = [
+        '{{methodCall}}',
+        '{{#addStack}}{{methodCall}}{{/addStack}}',
+        '{{object.methodCall}}',
+        '{{#addStack}}{{object.methodCall}}{{/addStack}}',
+    ].join("\n");
+
+    var template = Hogan.compile(src, { fixMethodCalls:true });
+
+    var result = template.render({
+
+        _level: 1,
+
+        methodCall: function(val) {
+            // A "proper" method call should return 1
+            return this._level + ':' + val._level;
+        },
+
+        addStack: [
+            { _level:2 },
+        ],
+
+        object: {
+
+            _level: 'object',
+
+            methodCall: function(val) {
+                // A "proper" method call should return 'object'
+                return this._level + ':' + val._level;
+            }
+        }
+    });
+  is(result, "1:1\n1:2\nobject:1\nobject:2", 'Method called in the context (this) of the object to which it is bound, and argument is top of context stack');
+});
+
+test("Section list and list index passed to method call", function() {
+  var text = '{#names}{^first}, {/}{.}{/names} : {#numbers}{.}{^last}, {/}{/numbers}';
+  var t = Hogan.compile(text, { delimiters: '{ }' });
+  var context = {
+    names: ['Larry', 'Moe', 'Curly'],
+    numbers: [1, 2, 3],
+    first: function(val, index) {
+        return (index === 0);
+    },
+    last: function(val, index, array) {
+        return (index === array.length - 1);
+    }
+  }
+  var s = t.render(context);
+  is(s, 'Larry, Moe, Curly : 1, 2, 3', 'Result of method call changes depending on index of item in list');
+});
+
+test("Partials inherit full context stack", function() {
+  var t = Hogan.compile("{{#a}}{{#b}}{{>partial}}{{/b}}{{/a}}"),
+      partials = { partial: Hogan.compile("{{c}} {{d}}") },
+      context = {
+        a: {
+          b: {
+            c: 'I can see this.'
+          }
+        },
+        d: 'And this too.'
+      },
+      s = t.render(context, partials);
+  is(s, "I can see this. And this too.", "Partials have access to top of context stack and bottom");
+});
+
+test("Piped Helpers", function() {
+  var text = "{{timestamp | iso8601Date}} {{numbers|sum}}",
+      t = Hogan.compile(text, { enableHelpers: true }),
+
+      context = {
+
+        timestamp: 0,
+        iso8601Date: function(timestamp) {
+          return new Date(timestamp).toISOString();
+        },
+
+        numbers: [1,2,3,4],
+        sum: function(arr) {
+          var sum = 0;
+          for (var i=0,len=arr.length; i<len; i++) {
+            sum += arr[i];
+          }
+          return sum;
+        }
+      },
+
+      s = t.render(context);
+  is(s, "1970-01-01T00:00:00.000Z 10", "The result of one method call may be piped into another method call");
 });
