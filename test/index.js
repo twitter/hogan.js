@@ -186,6 +186,8 @@ test("Delimiter cache busting", function() {
   is(t != t2, true, "Compiler returns new template with new delimiter options");
   s = t2.render({foo: "bar"});
   is(s, "|foo|bar", "custom delimiters first pass works");
+  var t3 =  Hogan.compile(text, {delimiters: "| |"});
+  is(t, t3, "Compiler returns cached template with same delimiter options");
 });
 
 test("Parse Basic", function() {
