@@ -177,6 +177,17 @@ test("Set Delimiter With Whitespace", function() {
   is(s, 'bar', "custom delimiters with whitespace works.")
 });
 
+test("Delimiter cache busting", function() {
+  var text = "|foo|[foo]";
+  var t = Hogan.compile(text, {delimiters: "| |"});
+  var s = t.render({foo: "bar"});
+  is(s, "bar[foo]", "custom delimiters first pass works");
+  var t2 = Hogan.compile(text, {delimiters: "[ ]"});
+  is(t != t2, true, "Compiler returns new template with new delimiter options");
+  s = t2.render({foo: "bar"});
+  is(s, "|foo|bar", "custom delimiters first pass works");
+});
+
 test("Parse Basic", function() {
   var text = "test";
   var tree = Hogan.parse(Hogan.scan(text));
