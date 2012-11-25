@@ -1116,33 +1116,63 @@ test("Section With Custom Uneven Delimiter Length", function() {
 
 
 test("Lambda expression in inherited template subsections", function() {
-    var lambda = function() {
-        return function(argument) {
-            return 'altered ' + argument;
-        }
+  var lambda = function() {
+    return function(argument) {
+      return 'altered ' + argument;
     }
-    var partial = '{{$section1}}{{#lambda}}parent1{{/lambda}}{{/section1}} - {{$section2}}{{#lambda}}parent2{{/lambda}}{{/section2}}';
-    var text = '{{< partial}}{{$section1}}{{#lambda}}child1{{/lambda}}{{/section1}}{{/ partial}}'
-    var template = Hogan.compile(text);
+  }
+  var partial = '{{$section1}}{{#lambda}}parent1{{/lambda}}{{/section1}} - {{$section2}}{{#lambda}}parent2{{/lambda}}{{/section2}}';
+  var text = '{{< partial}}{{$section1}}{{#lambda}}child1{{/lambda}}{{/section1}}{{/ partial}}'
+  var template = Hogan.compile(text);
 
-    var result = template.render({lambda: lambda}, {partial: Hogan.compile(partial)});
-    is(result, 'altered child1 - altered parent2', 'Lambda replacement works correctly with template inheritance');
+  var result = template.render({lambda: lambda}, {partial: Hogan.compile(partial)});
+  is(result, 'altered child1 - altered parent2', 'Lambda replacement works correctly with template inheritance');
 });
 
 test("Implicit iterator lambda evaluation", function () {
-    var lambda = function() {
-        return function() {
-            return 'evaluated'
-        }
-    };
+  var lambda = function() {
+    return function() {
+      return 'evaluated'
+    }
+  };
 
-    var list = [lambda];
+  var list = [lambda];
 
-    var text = '{{#list}}{{.}}{{/list}}';
-    var template = Hogan.compile(text);
+  var text = '{{#list}}{{.}}{{/list}}';
+  var template = Hogan.compile(text);
 
-    var result = template.render({list: list});
-    is(result, 'evaluated', '{{.}} lambda correctly evaluated');
+  var result = template.render({list: list});
+  is(result, 'evaluated', '{{.}} lambda correctly evaluated');
+});
+
+test('get() is not called without modelGet option', function() {
+  var model = {
+    data: 'direct',
+    get: function (key) {
+      return key;
+    }
+  }
+
+  var text = '{{data}}{{indirect}}';
+  var template = Hogan.compile(text, {modelGet: false});
+
+  var result = template.render(model);
+  is(result, 'direct', 'get() is checked after direct access');
+});
+
+test("Direct object access takes precedence over get()", function () {
+  var model = {
+    data: 'direct',
+    get: function (key) {
+      return key;
+    }
+  }
+
+  var text = '{{data}} {{indirect}}';
+  var template = Hogan.compile(text, {modelGet: true});
+
+  var result = template.render(model);
+  is(result, 'direct indirect', 'get() is checked after direct access');
 });
 
 test("Lambda expression in included partial templates", function() {
