@@ -1189,3 +1189,20 @@ test("Lambda expression in included partial templates", function() {
     var result = template.render({lambda: lambda}, {partial: Hogan.compile(partial), parent: Hogan.compile(parent)});
     is(result, 'changed test2', 'Lambda expression in included partial templates');
 });
+
+test("Context inheritance in recursive partials", function() {
+  var partial = Hogan.compile('{{#list}}{{foo}} > {{#sub}}{{> par}}{{/sub}}{{/list}}');
+  var template = Hogan.compile('Start > {{> par}}');
+  var result = template.render(
+      {
+          list: [
+              { foo: 1 },
+              { foo: 2 },
+              { foo: 3, sub: { list: [{ foo: 4, sub:false }, { foo: 5, list:[], sub:true }] } }
+          ]
+      },
+      { par: partial  }
+  );
+
+  is(result, "Start > 1 > 2 > 3 > 4 > 5 > ", "recursion works");
+});
