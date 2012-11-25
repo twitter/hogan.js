@@ -47,7 +47,7 @@ console.log(tree[1].nodes[0].nodes[0]);
 It's also possible to use HoganTemplate objects without the Hogan compiler
 present. That means you can pre-compile your templates on the server, and
 avoid shipping the compiler. However, the optional lambda features from the
-Mustache spec do require the compiler to be present.
+Mustache spec require the compiler and the original template source to be present.
 
 ## Why Hogan.js?
 
