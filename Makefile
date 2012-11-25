@@ -5,20 +5,27 @@ VERSION = ${shell node -e 'console.log(JSON.parse(require("fs").readFileSync("pa
 #
 # Run command line tests
 #
-test:
+phantom:
+	@ echo 'Running phantom.js QUnit tests.'
 	@ node test/run.js test/index.html
 
 #
 # Run hulk tests
 #
 hulk:
+	@ echo 'Running hulk tests.'
 	@ node test/hulk.js
 
 #
 # Run Mustache spec tests
 #
 spec:
+	@ echo 'Running spec tests.'
 	@ node test/spec.js
+	@ node test/specWithGet.js
+
+test: phantom hulk spec
+	@ echo "Testing complete.\n"
 
 #
 # Run benchmark
