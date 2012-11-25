@@ -19,6 +19,7 @@ hulk:
 #
 spec:
 	@ node test/spec.js
+	@ node test/specWithGet.js
 
 #
 # Run benchmark
