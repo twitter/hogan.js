@@ -30,9 +30,9 @@ function runTest(tests) {
   tests.forEach(function(test) {
     var partials = {};
     for (var i in test.partials) {
-      partials[i] = Hogan.compile(test.partials[i]);
+      partials[i] = Hogan.compile(test.partials[i], {modelGet: true});
     }
-    var t = Hogan.compile(test.template);
+    var t = Hogan.compile(test.template, {modelGet: true});
 
     if (test.data.lambda) {
       var func = (new Function ('return ' + test.data.lambda.js)());

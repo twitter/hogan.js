@@ -1145,6 +1145,21 @@ test("Implicit iterator lambda evaluation", function () {
   is(result, 'evaluated', '{{.}} lambda correctly evaluated');
 });
 
+test('get() is not called without modelGet option', function() {
+  var model = {
+    data: 'direct',
+    get: function (key) {
+      return key;
+    }
+  }
+
+  var text = '{{data}}{{indirect}}';
+  var template = Hogan.compile(text, {modelGet: false});
+
+  var result = template.render(model);
+  is(result, 'direct', 'get() is checked after direct access');
+});
+
 test("Direct object access takes precedence over get()", function () {
   var model = {
     data: 'direct',
@@ -1154,7 +1169,7 @@ test("Direct object access takes precedence over get()", function () {
   }
 
   var text = '{{data}} {{indirect}}';
-  var template = Hogan.compile(text);
+  var template = Hogan.compile(text, {modelGet: true});
 
   var result = template.render(model);
   is(result, 'direct indirect', 'get() is checked after direct access');
