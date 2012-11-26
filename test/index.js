@@ -177,6 +177,13 @@ test("Set Delimiter With Whitespace", function() {
   is(s, 'bar', "custom delimiters with whitespace works.")
 });
 
+test("Delimiters with extra whitespace", function() {
+  var text = "{{= |    | =}}|foo|";
+  var t = Hogan.compile(text);
+  var s = t.render({foo: "bar"});
+  is(s, 'bar', "custom delimiters with extra whitespace works");
+});
+
 test("Delimiter cache busting", function() {
   var text = "|foo|[foo]";
   var t = Hogan.compile(text, {delimiters: "| |"});
