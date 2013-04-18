@@ -65,7 +65,7 @@ var text = "my <%example%> template."
 Hogan.compile(text, {delimiters: '<% %>'});
 ```
 
-There are current four valid options.
+There are currently four valid options.
 
 asString: return the compiled template as a string. This feature is used
 by hulk to produce strings containing pre-compiled templates.
