@@ -2,7 +2,7 @@
 
 [Hogan.js](http://twitter.github.com/hogan.js/) is a compiler for the
 [Mustache](http://mustache.github.com/) templating language. For information
-on Mustache, see the [manpage](http://mustache.github.com/mustache.5.html) and
+on Mustache, see the [mainpage](http://mustache.github.com/mustache.5.html) and
 the [spec](https://github.com/mustache/spec).
 
 ## Basics
