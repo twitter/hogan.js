@@ -20,7 +20,7 @@
     , "mkdirp": "0.3.0"
     }
   , "devDependencies": {
-      "uglify-js": "*"
+      "uglify-js": "1.x"
     , "jsdom": "0.3.4"
     , "step": "0.0.5"
     , "rimraf": "2.0.1"
