@@ -4,7 +4,7 @@
   , "version": "3.0.0"
   , "keywords": ["mustache", "template"]
   , "main": "./lib/hogan.js"
-  , "scripts: [
+  , "scripts": [
     "./lib/compiler.js",
     "./lib/hogan.js",
     "./lib/template.js"
