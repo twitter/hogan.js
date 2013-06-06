@@ -3,11 +3,11 @@
   , "description": "A mustache compiler."
   , "version": "3.0.0"
   , "keywords": ["mustache", "template"]
-  , "main": "./lib/hogan.js"
+  , "main": "lib/hogan.js"
   , "scripts": [
-    "./lib/compiler.js",
-    "./lib/hogan.js",
-    "./lib/template.js"
+    "lib/compiler.js",
+    "lib/hogan.js",
+    "lib/template.js"
   ]
   , "homepage": "http://twitter.github.com/hogan.js/"
   , "author": "Twitter Inc."
