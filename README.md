@@ -99,6 +99,11 @@ delimiters: A string that overrides the default delimiters. Example: "<% %>".
 
 disableLambda: disables the higher-order sections / lambda-replace features of Mustache.
 
+funcWhitelist: Array of function names as string that are allowed to execute. Example:
+
+  ```js
+  Hogan.compile(template, {"funcWhitelist": ['foo', 'bar']});
+  ```
 ## Issues
 
 Have a bug? Please create an issue here on GitHub!

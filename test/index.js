@@ -1213,3 +1213,51 @@ test("Context inheritance in recursive partials", function() {
 
   is(result, "Start > 1 > 2 > 3 > 4 > 5 > ", "recursion works");
 });
+
+test("Whitelisted functions", function() {
+  var text = "abc{{doo}}def{{#foo}}ghi{{/foo}}{{bar}}{{>partial}}";
+  var partial = "-ps{{doo}}def{{#foo}}ghi{{/foo}}{{bar}}pe-";
+  var opts = {"funcWhitelist": ['foo', 'bar']};
+  var t = Hogan.compile(text, opts);
+  var p = Hogan.compile(partial, opts);
+  var context = {
+    "foo": function foo () {return function (key) {return key; } },
+    "bar": function bar (key) {return 'jkl'; }
+  };
+  var s = t.render(context, {partial: p});
+  is(s, "abcdefghijkl-psdefghijklpe-", "Only whitelisted functions are executed");
+});
+
+test("Non Whitelisted functions", function() {
+  var text = "abcdef{{#foo}}ghi{{/foo}}{{bar}}{{>partial}}";
+  var partial = "-ps{{doo}}def{{#foo}}ghi{{/foo}}{{bar}}pe-";
+  var opts = {"funcWhitelist": ['foo', 'bar']};
+  var t = Hogan.compile(text, opts);
+  var p = Hogan.compile(partial, opts);
+  var context = {
+    "doo": function doo () {return "doo"; },
+    "foo": function foo () {return function (key) {return key; } },
+    "bar": function bar (key) {return 'jkl'; }
+  };
+
+  try {
+    var s = t.render(context, {partial: p});
+  } catch (e) {
+    var msg = e.message;
+  }
+  is(msg, "Function not whitelisted.", "Non whitelisted functions throw error.");
+});
+
+test("funcWhitelist not provided in options", function() {
+  var text = "123{{doo}}{{#foo}}789{{/foo}}{{bar}}";
+  var opts = {"funcWhitelist": []};
+  var t = Hogan.compile(text, opts);
+  var context = {
+    "doo": function () {return '456'; },
+    "foo": function () {return function (key) {return key; } },
+    "bar": function bar (key) {return '101112'; }
+  };
+  
+  var s = t.render(context);
+  is(s, "123456789101112", "All lambdas are executed");
+});
