@@ -859,7 +859,7 @@ test("Recursion in inherited templates", function() {
   var include2 = Hogan.compile("{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}");
   var t = Hogan.compile("{{<include}}{{$foo}}override{{/foo}}{{/include}}");
   var s = t.render({}, {include: include, include2: include2});
-  is(s, "override include2 default content default content don't recurse", "matches expected recursive output");
+  is(s, "override override override don't recurse", "matches expected recursive output");
 });
 
 test("Doesn't parse templates that have non-$ tags inside super template tags", function() {
@@ -912,6 +912,22 @@ test("Issue #62: partial references inside substitutions should work", function 
   };
 
   is(templates.main.render({}, templates), templatesAsString.main.render({}, templatesAsString))
+});
+
+test("Top-level substitutions take precedence in multi-level inheritance", function() {
+  var child = Hogan.compile('{{<parent}}{{$a}}c{{/a}}{{/parent}}').render({}, {
+    parent: '{{<older}}{{$a}}p{{/a}}{{/older}}',
+    older: '{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}',
+    grandParent: '{{$a}}g{{/a}}'
+  });
+  is(child, 'c', 'should use the child sub value');
+
+  var noSubChild = Hogan.compile('{{<parent}}{{/parent}}').render({}, {
+    parent: '{{<older}}{{$a}}p{{/a}}{{/older}}',
+    older: '{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}',
+    grandParent: '{{$a}}g{{/a}}'
+  });
+  is(noSubChild, 'p', 'should use the parent\'s value');
 });
 
 /* Safety tests */
