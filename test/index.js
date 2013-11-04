@@ -19,7 +19,7 @@ test("Scan Text No Tags", function() {
   var text = "<h2>hi</h2>";
   var tokens = Hogan.scan(text);
   is(tokens.length, 1, "One token");
-  is(tokens[0].text + '', text, "text is equal to first token");
+  is(tokens[0].text, text, "text is equal to first token");
 });
 
 test("Scan One Tag", function() {
@@ -33,13 +33,13 @@ test("Scan Multiple Tags", function() {
   var text = "asdf{{hmm}}asdf2{{hmm2}}asdf3";
   var tokens = Hogan.scan(text);
   is(tokens.length, 5, "3 text tokens, 2 tag tokens.");
-  is(tokens[0].text+'', "asdf", "first token is text");
+  is(tokens[0].text, "asdf", "first token is text");
   is(tokens[1].n, "hmm", "second token is tag");
   is(tokens[1].tag, "_v", "second token is a variable");
-  is(tokens[2].text+'', "asdf2", "third token is text");
+  is(tokens[2].text, "asdf2", "third token is text");
   is(tokens[3].n, "hmm2", "fourth token is tag");
   is(tokens[3].tag, "_v", "fourth token is a variable");
-  is(tokens[4].text+'', "asdf3", "Fifth token is text");
+  is(tokens[4].text, "asdf3", "Fifth token is text");
 });
 
 test("Scan Section Open", function() {
@@ -72,13 +72,13 @@ test("Scan Section In Content", function() {
   var text = "abc{{#hmm}}def{{/hmm}}ghi";
   var tokens = Hogan.scan(text);
   is(tokens.length, 5, "3 text tokens, 2 tag tokens.");
-  is(tokens[0].text + '', "abc", "first token is text");
+  is(tokens[0].text, "abc", "first token is text");
   is(tokens[1].n, "hmm", "second token is tag");
   is(tokens[1].tag, "#", "second token is a variable");
-  is(tokens[2].text+'', "def", "third token is text");
+  is(tokens[2].text, "def", "third token is text");
   is(tokens[3].n, "hmm", "fourth token is tag");
   is(tokens[3].tag, "/", "fourth token is a variable");
-  is(tokens[4].text+'', "ghi", "Fifth token is text");
+  is(tokens[4].text, "ghi", "Fifth token is text");
 });
 
 test("Scan Negative Section", function() {
@@ -127,36 +127,36 @@ test("Scan Section With Triple Stache Inside", function() {
   var text = "a{{#yo}}b{{{hmm}}}c{{/yo}}d";
   var tokens = Hogan.scan(text);
   is(tokens.length, 7, "One token");
-  is(tokens[0].text+'', "a", "First token content is correct text.");
+  is(tokens[0].text, "a", "First token content is correct text.");
   is(tokens[1].n, "yo", "Second token content is correct text.");
   is(tokens[1].tag, "#", "Second token is a section.");
-  is(tokens[2].text+'', "b", "Third token content is correct text.");
+  is(tokens[2].text, "b", "Third token content is correct text.");
   is(tokens[3].n, "hmm", "Fourth token content is correct text.");
   is(tokens[3].tag, "{", "Fourth token is a triple stache.");
-  is(tokens[4].text+'', "c", "Fifth token content is correct text.");
+  is(tokens[4].text, "c", "Fifth token content is correct text.");
   is(tokens[5].n, "yo", "Sixth token content is correct text.");
   is(tokens[5].tag, "/", "Sixth token is a close.");
-  is(tokens[6].text+'', "d", "Seventh token content is correct text.");
+  is(tokens[6].text, "d", "Seventh token content is correct text.");
 });
 
 test("Scan Set Delimiter", function() {
   var text = "a{{=<% %>=}}b";
   var tokens = Hogan.scan(text);
   is(tokens.length, 2, "change delimiter doesn't appear as token.");
-  is(tokens[0].text+'', "a", "text before change delimiter is processed.");
-  is(tokens[1].text+'', "b", "text after change delimiter is processed.");
+  is(tokens[0].text, "a", "text before change delimiter is processed.");
+  is(tokens[1].text, "b", "text after change delimiter is processed.");
 });
 
 test("Scan Reset Delimiter", function() {
   var text = "a{{=<% %>=}}b<%hmm%>c<%={{ }}=%>d{{hmm}}";
   var tokens = Hogan.scan(text);
   is(tokens.length, 6, "8 tokens, delimiter changes don't count.");
-  is(tokens[0].text+'', "a", "first token is correct.");
-  is(tokens[1].text+'', "b", "third token is correct.");
+  is(tokens[0].text, "a", "first token is correct.");
+  is(tokens[1].text, "b", "third token is correct.");
   is(tokens[2].tag, "_v", "third token is correct tag.");
   is(tokens[2].n, "hmm", "third token is correct name.");
-  is(tokens[3].text+'', "c", "fifth token is correct.");
-  is(tokens[4].text+'', "d", "seventh token is correct.");
+  is(tokens[3].text, "c", "fifth token is correct.");
+  is(tokens[4].text, "d", "seventh token is correct.");
   is(tokens[5].tag, "_v", "eighth token is correct tag.");
   is(tokens[5].n, "hmm", "eighth token is correct name.");
 });
@@ -201,17 +201,17 @@ test("Parse Basic", function() {
   var text = "test";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 1, "one parse node");
-  is(tree[0].text+'', "test", "text is correct");
+  is(tree[0].text, "test", "text is correct");
 });
 
 test("Parse Variables", function() {
   var text = "test{{foo}}test!{{bar}}test!!{{baz}}test!!!";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 7, "one parse node");
-  is(tree[0].text+'', "test", "first text is correct");
-  is(tree[2].text+'', "test!", "second text is correct")
-  is(tree[4].text+'', "test!!", "third text is correct")
-  is(tree[6].text+'', "test!!!", "last text is correct")
+  is(tree[0].text, "test", "first text is correct");
+  is(tree[2].text, "test!", "second text is correct")
+  is(tree[4].text, "test!!", "third text is correct")
+  is(tree[6].text, "test!!!", "last text is correct")
   is(tree[1].n, "foo", "first var is correct");
   is(tree[3].n, "bar", "second var is correct");
   is(tree[5].n, "baz", "third var is correct");
@@ -221,12 +221,12 @@ test("Parse Section", function() {
   var text = "a{{#foo}}b{{/foo}}c";
   var tree = Hogan.parse(Hogan.scan(text));
   is(tree.length, 3, "three nodes at base");
-  is(tree[0].text+'', "a", "correct text in first node");
+  is(tree[0].text, "a", "correct text in first node");
   is(tree[1].hasOwnProperty('nodes'), true, "second node is a section");
   is(tree[1].tag, '#', "second node is a section");
   is(tree[1].n, "foo", "correct name for section");
-  is(tree[1].nodes[0].text+'', "b", "correct text in section");
-  is(tree[2].text+'', "c", "correct text in last node");
+  is(tree[1].nodes[0].text, "b", "correct text in section");
+  is(tree[2].text, "c", "correct text in last node");
 });
 
 test("Parse Indexes", function() {
@@ -240,12 +240,12 @@ test("Parse Negative Section", function() {
   var tree = Hogan.parse(Hogan.scan(text));
 
   is(tree.length, 3, "three nodes at base");
-  is(tree[0].text+'', "a", "correct text in first node");
+  is(tree[0].text, "a", "correct text in first node");
   is(tree[1].hasOwnProperty('nodes'), true, "second node is a section");
   is(tree[1].tag, '^', "second node is a negative section");
   is(tree[1].n, "foo", "correct name for section");
-  is(tree[1].nodes[0].text+'', "b", "correct text in section");
-  is(tree[2].text+'', "c", "correct text in last node");
+  is(tree[1].nodes[0].text, "b", "correct text in section");
+  is(tree[2].text, "c", "correct text in last node");
 });
 
 test("Parse Nested Sections", function() {
@@ -257,7 +257,7 @@ test("Parse Nested Sections", function() {
   is(tree[0].n, "bar", "first section name is 'bar'");
   is(tree[0].nodes.length, 1, "first section contains one node.");
   is(tree[0].nodes[0].n, "foo", "correct name for nested section");
-  is(tree[0].nodes[0].nodes[0].text+'', "c", "correct text in nested section");
+  is(tree[0].nodes[0].nodes[0].text, "c", "correct text in nested section");
 });
 
 test("Missing Closing Tag", function() {
