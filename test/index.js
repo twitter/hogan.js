@@ -862,6 +862,32 @@ test("Recursion in inherited templates", function() {
   is(s, "override override override don't recurse", "matches expected recursive output");
 });
 
+test("Cache contains old partials instances", function() {
+  var tests = [{
+    template: "{{<parent}}{{$a}}c{{/a}}{{/parent}}",
+    partials: {
+      parent: "{{<grandParent}}{{$a}}p{{/a}}{{/grandParent}}",
+      grandParent: "{{$a}}g{{/a}}"
+    },
+    expected: "c"
+  }, {
+    template: "{{<parent}}{{/parent}}",
+    partials:{
+      parent: "{{<grandParent}}{{$a}}p{{/a}}{{/grandParent}}",
+      grandParent: "{{$a}}g{{/a}}"
+    },
+    expected: "p"
+  }];
+  tests.forEach(function(test) {
+    var partials = {};
+    for (var i in test.partials) {
+      partials[i] = Hogan.compile(test.partials[i]);
+    }
+    var output = Hogan.compile(test.template).render({}, partials);
+    is(output, test.expected);
+  });
+});
+
 test("Doesn't parse templates that have non-$ tags inside super template tags", function() {
   var msg = "";
   try {
