@@ -956,6 +956,20 @@ test("Top-level substitutions take precedence in multi-level inheritance", funct
   is(noSubChild, 'p', 'should use the parent\'s value');
 });
 
+test("Lambdas work in multi-level inheritance", function() {
+  var lambda = function() {
+    return function(text) {
+      return "changed " + text;
+    };
+  }
+  var child = Hogan.compile('{{<parent}}{{$a}}{{#lambda}}c{{/lambda}}{{/a}}{{/parent}}').render({lambda:lambda}, {
+    parent: '{{<older}}{{$a}}p{{/a}}{{$b}}{{#lambda}}p{{/lambda}}{{/b}}{{/older}}',
+    older: '{{<grandParent}}{{$a}}o{{/a}}{{$c}}{{#lambda}}o{{/lambda}}{{/c}}{{/grandParent}}',
+    grandParent: '{{$a}}g{{/a}} - {{$b}}g{{/b}} - {{$c}}g{{/c}} - {{#lambda}}g{{/lambda}}'
+  });
+  is(child, 'changed c - changed p - changed o - changed g', 'should be changed child value');
+});
+
 /* Safety tests */
 
 test("Updates object state", function() {
