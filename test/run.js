@@ -28,7 +28,9 @@ function run(file, callback) {
     var url = path.resolve('.', path.dirname(file));
     var window = jsdom(html, null, {url: url + '/'}).createWindow();
     // silence QUnit error logging
-    window.console.error = window.console.warn = function(){};
+    if (window.console) {
+      window.console.error = window.console.warn = function(){};
+    }
     window.onload = function(){
       window.QUnit.done = function() {
         callback(null, {file: file, window: window});
