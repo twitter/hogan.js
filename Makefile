@@ -43,7 +43,7 @@ dist:
 #
 # Make a new version of Hogan from the current dev version.
 #
-release: clean dist
+release: clean test dist
 	@ echo "Creating a new version of Hogan."
 	@ mkdir -p web/builds/$(VERSION)
 	@ cp dist/*.* web/builds/$(VERSION)/.
