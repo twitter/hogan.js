@@ -172,7 +172,7 @@ pre, code {
 	padding: 5px 10px;
 	margin-bottom: 20px;
 	font-family: courier;
-	overflow: auto;
+	overflow: hidden;
 }
 
 pre code {
