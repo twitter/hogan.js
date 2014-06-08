@@ -28,16 +28,12 @@ function copy(src, dst) {
 }
 
 function uglify(src, dst) {
-  var jsp = require("uglify-js").parser;
-  var pro = require("uglify-js").uglify;
-  var orig_code = read(src);
-  var ast = jsp.parse(orig_code); // parse code and get the initial AST
-  ast = pro.ast_mangle(ast); // get a new AST with mangled names
-  ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-  fs.writeFileSync(dst, minlicense + pro.gen_code(ast));
+  var UglifyJS = require("uglify-js");
+  fs.writeFileSync(dst, minlicense + UglifyJS.minify(src).code);
 }
 
-var packageJSON = JSON.parse(read('package.json'));
+var packageJSON = JSON.parse(read(__dirname + '/../package.json'));
+
 var version = packageJSON.version;
 
 function removeFirstComment(text) {
@@ -64,10 +60,6 @@ wrappers.forEach(function(wrapper) {
 });
 
 // Also release Hogan.Template on its own.
-wrappers.forEach(function(wrapper) {
-  var tail = path.basename(wrapper, '.mustache');
-  var target = distPath + 'hogan.template-' + version + '.' + tail;
-  var uglified =  distPath + 'hogan.template-' + version + '.min.' + tail;
-  fs.writeFileSync(target, Hogan.compile(read(wrapper)).render({template: context.template}));
-  uglify(target, uglified);
-});
+var templateTarget = distPath + 'template-' + version + '.js';
+fs.writeFileSync(templateTarget, read(__dirname + '/../lib/template.js'));
+uglify(templateTarget, distPath + 'template-' + version + '.min.js');
