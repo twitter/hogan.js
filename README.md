@@ -1,7 +1,7 @@
 ## Hogan.js - A mustache compiler. [![Build Status](https://secure.travis-ci.org/twitter/hogan.js.png)](http://travis-ci.org/twitter/hogan.js)
 
-[Hogan.js](http://twitter.github.com/hogan.js/) is a compiler for the
-[Mustache](http://mustache.github.com/) templating language. For information
+[Hogan.js](http://twitter.github.io/hogan.js/) is a compiler for the
+[Mustache](http://mustache.github.io/) templating language. For information
 on Mustache, see the [manpage](http://mustache.github.com/mustache.5.html) and
 the [spec](https://github.com/mustache/spec).
 
@@ -48,6 +48,10 @@ It's also possible to use HoganTemplate objects without the Hogan compiler
 present. That means you can pre-compile your templates on the server, and
 avoid shipping the compiler. However, the optional lambda features from the
 Mustache spec require the compiler and the original template source to be present.
+
+Hogan also supports [template inheritance](https://github.com/mustache/spec/pull/75),
+and maintains compatibility with other implementations like [mustache.java](https://github.com/spullara/mustache.java),
+[mustache.php](https://github.com/bobthecow/mustache.php), and [GRMustache](https://github.com/groue/GRMustache)
 
 ## Why Hogan.js?
 
