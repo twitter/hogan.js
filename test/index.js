@@ -354,6 +354,22 @@ test("Escaping", function() {
   }
 });
 
+test("Escaping \\u2028", function() {
+  var text = "{{foo}}\u2028{{bar}}";
+  var t = Hogan.compile(text);
+  var s = t.render({foo: 'foo', bar: 'bar'});
+
+  is(s, "foo\u2028bar", "\\u2028 improperly escaped");
+});
+
+test("Escaping \\u2029", function() {
+  var text = "{{foo}}\u2029{{bar}}";
+  var t = Hogan.compile(text);
+  var s = t.render({foo: 'foo', bar: 'bar'});
+
+  is(s, "foo\u2029bar", "\\u2029 improperly escaped");
+});
+
 test("Mustache Injection", function() {
   var text = "{{foo}}";
   var t = Hogan.compile(text);
