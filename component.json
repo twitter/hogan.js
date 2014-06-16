@@ -21,9 +21,7 @@
     }
   ]
   , "ignore" : [
-     "test"
     ,"tools"
-    ,"web"
     ,"wrappers"
     ,".*"
   ]
