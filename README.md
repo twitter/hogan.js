@@ -60,15 +60,15 @@ Why another templating library?
 Hogan.js was written to meet three templating library requirements: good
 performance, standalone template objects, and a parser API.
 
-## Install
+# Install
 
-# Node.js
+## Node.js
 
 ```
 npm install hogan.js
 ```
 
-# component
+## component
 
 ```
 component install twitter/hogan.js
