@@ -21,7 +21,7 @@
     }
   ]
   , "ignore" : [
-    ,"tools"
+    "tools"
     ,"wrappers"
     ,".*"
   ]
