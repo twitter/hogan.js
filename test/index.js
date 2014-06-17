@@ -499,6 +499,36 @@ test("Undefined Return Value From Lambda", function() {
   is(s, "abcdef", "deal with undefined return values from lambdas.")
 });
 
+test("Sections with null values are treated as key hits", function() {
+  var text = "{{#obj}}{{#sub}}{{^test}}ok{{/test}}{{/sub}}{{/obj}}";
+  var t = Hogan.compile(text);
+  var context = {
+    obj: {
+      test: true,
+      sub: {
+        test: null
+      }
+    }
+  }
+  var s = t.render(context);
+  is(s, "ok");
+});
+
+test("Sections with undefined values are treated as key misses", function() {
+  var text = "{{#obj}}{{#sub}}{{#test}}ok{{/test}}{{/sub}}{{/obj}}";
+  var t = Hogan.compile(text);
+  var context = {
+    obj: {
+      test: true,
+      sub: {
+        test: undefined
+      }
+    }
+  }
+  var s = t.render(context);
+  is(s, "ok");
+});
+
 test("Section Extensions", function() {
   var text = "Test {{_//|__foo}}bar{{/foo}}";
   var options = {sectionTags:[{o:'_//|__foo', c:'foo'}]};
