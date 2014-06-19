@@ -565,6 +565,25 @@ test("Section Extensions In Higher Order Sections", function() {
   is(s, "Testbarqux", "unprocessed test");
 });
 
+test("Section Extension With Higher Order Sections Access Outer Context ", function() {
+  var text = "{{#inner}}{{#extension}}{{outerValue}}{{/extension}}{{/inner}}"
+  var t = Hogan.compile(text);
+  var context = {
+    outerValue: "Outer value",
+    inner: {
+      innerValue: "Inner value"
+    },
+    extension: function () {
+      return function (tmpl, ctx) {
+        var key = /{{(.*)}}/.exec(tmpl)[1];
+        return ctx[0][key];
+      }
+    }
+  };
+  var s = t.render(context);
+  is(s, "Outer value", "unprocessed test");
+});
+
 test("Section Extensions In Lambda Replace Variable", function() {
   var text = "Test{{foo}}";
   var options = {sectionTags:[{o:'_baz', c:'baz'}]};
