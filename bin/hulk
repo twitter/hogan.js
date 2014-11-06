@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env nodejs
 
 /*
  *  Copyright 2011 Twitter, Inc.
