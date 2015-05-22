@@ -27,20 +27,20 @@ var hogan  = require('../lib/hogan.js')
 // locals
 var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}', '\\']
   , specialsRegExp = new RegExp('(\\' + specials.join('|\\') + ')', 'g')
-  , options        = { 
-    'namespace': String, 
-    'outputdir': path, 
-    'variable': String, 
-    'wrapper': String, 
+  , options        = {
+    'namespace': String,
+    'outputdir': path,
+    'variable': String,
+    'wrapper': String,
     'version': true,
     'help': true
     }
-  , shortHand      = { 
+  , shortHand      = {
     'n': ['--namespace'],
-    'o': ['--outputdir'], 
-    'v': ['--variable'], 
-    'w': ['--wrapper'], 
-    'h': ['--help'], 
+    'o': ['--outputdir'],
+    'v': ['--variable'],
+    'w': ['--wrapper'],
+    'h': ['--help'],
     'v': ['--version']
     }
   , templates;
@@ -118,14 +118,20 @@ function removeByteOrderMark(text) {
 
 
 // wrap templates
-function wrap(file, name, openedFile) {
+function wrap(file, name, openedFile, position) {
   switch(options.wrapper) {
     case "amd":
       return 'define('+ (!options.outputdir ? '"' + path.join(path.dirname(file), name) + '", ' : '') + '[ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
+    case "es6":
+      var importStatement = position == 0 ? "import Hogan from 'hogan.js'; \n" : "";
+      return importStatement
+        + 'export var ' + name + ' = new Hogan.Template('
+        + hogan.compile(openedFile, { asString: 1 })
+        + ');'
     default:
-      return (options.variable || 'templates') 
-        + '["' + name + '"] = new Hogan.Template(' 
-        + hogan.compile(openedFile, { asString: 1 }) 
+      return (options.variable || 'templates')
+        + '["' + name + '"] = new Hogan.Template('
+        + hogan.compile(openedFile, { asString: 1 })
         + ');';
   }
 }
@@ -145,12 +151,12 @@ function namespace(name) {
 
 // write a template foreach file that matches template extension
 templates = extractFiles(options.argv.remain)
-  .map(function (file) {
+  .map(function (file, i) {
     var openedFile = fs.readFileSync(file, 'utf-8'), name;
     if (!openedFile) return;
     name = namespace(path.basename(file).replace(/\..*$/, ''));
     openedFile = removeByteOrderMark(openedFile.trim());
-    openedFile = wrap(file, name, openedFile);
+    openedFile = wrap(file, name, openedFile, i);
     if (!options.outputdir) return openedFile;
     var vn = options.variable || 'templates';
     fs.writeFileSync(path.join(options.outputdir, name + '.js')
