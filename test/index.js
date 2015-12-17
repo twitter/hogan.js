@@ -684,6 +684,13 @@ test("Dotted Names", function() {
   is(s, '"Joe" == "Joe"', "dotted names work");
 });
 
+test("Leading Dot", function() {
+  var text = "{{#items}}{{.title}}{{/items}}";
+  var t = Hogan.compile(text);
+  var s = t.render({items: [{title: 'a'}, {title: 'b'}, {}], title: 'ha'});
+  is(s, "ab", "leading dot forces lookup on top context");
+});
+
 test("Implicit Iterator", function() {
   var text = '{{#stuff}} {{.}} {{/stuff}}';
   var t = Hogan.compile(text);
