@@ -1,4 +1,5 @@
-## Hogan.js - A mustache compiler. [![Build Status](https://secure.travis-ci.org/twitter/hogan.js.png)](http://travis-ci.org/twitter/hogan.js)
+## Hogan.js - A mustache compiler. [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/ "This project is not actively maintained")
+
 
 [Hogan.js](http://twitter.github.io/hogan.js/) is a compiler for the
 [Mustache](http://mustache.github.io/) templating language. For information
