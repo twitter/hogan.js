@@ -122,11 +122,46 @@ function wrap(file, name, openedFile) {
   switch(options.wrapper) {
     case "amd":
       return 'define('+ (!options.outputdir ? '"' + path.join(path.dirname(file), name) + '", ' : '') + '[ "hogan.js" ], function(Hogan){ return new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');});';
+    case "node":
+      var globalObj = 'global.' + (options.variable || 'templates') + '["' + name + '"]';
+      var globalStmt = globalObj + ' = new Hogan.Template(' + hogan.compile(openedFile, { asString: 1 }) + ');';
+      var nodeOutput = globalStmt;
+
+      // if we have a template per file the export will expose the template directly
+      if (options.outputdir) {
+        nodeOutput = nodeOutput + '\n' + 'module.exports = ' + globalObj + ';';
+      }
+
+      return nodeOutput;
     default:
-      return (options.variable || 'templates') 
-        + '["' + name + '"] = new Hogan.Template(' 
-        + hogan.compile(openedFile, { asString: 1 }) 
+      return (options.variable || 'templates')
+        + '["' + name + '"] = new Hogan.Template('
+        + hogan.compile(openedFile, { asString: 1 })
         + ');';
+  }
+}
+
+
+function prepareOutput(content) {
+  var variableName = options.variable || 'templates';
+  switch (options.wrapper) {
+    case "amd":
+      return content;
+    case "node":
+      var nodeExport = '';
+
+      // if we have aggregated templates the export will expose the template map
+      if (!options.outputdir) {
+        nodeExport = 'module.exports = global.' + variableName + ';\n';
+      }
+
+      return '(function() {\n' +
+        'if (!!!global.' + variableName + ') global.' + variableName + ' = {};\n' +
+        content + '\n' +
+        nodeExport +
+        '})();';
+    default:
+      return 'if (!!!' + variableName + ') var ' + variableName + ' = {};\n' + content;
   }
 }
 
@@ -139,7 +174,7 @@ if (options.outputdir) {
 
 // Prepend namespace to template name
 function namespace(name) {
-    return (options.namespace || '') + name;
+  return (options.namespace || '') + name;
 }
 
 
@@ -152,9 +187,8 @@ templates = extractFiles(options.argv.remain)
     openedFile = removeByteOrderMark(openedFile.trim());
     openedFile = wrap(file, name, openedFile);
     if (!options.outputdir) return openedFile;
-    var vn = options.variable || 'templates';
     fs.writeFileSync(path.join(options.outputdir, name + '.js')
-      , 'if (!!!' + vn + ') var ' + vn + ' = {};\n' + openedFile);
+      , prepareOutput(openedFile));
   })
   .filter(function (t) {
     return t;
@@ -163,8 +197,5 @@ templates = extractFiles(options.argv.remain)
 
 // output templates
 if (!templates.length || options.outputdir) process.exit(0);
-if (!options.wrapper) {
-  var vn = options.variable || 'templates';
-  console.log('if (!!!' + vn + ') var ' + vn + ' = {};');
-}
-console.log(templates.join('\n'));
+
+console.log(prepareOutput(templates.join('\n')));

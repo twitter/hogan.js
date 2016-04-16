@@ -27,12 +27,49 @@ exec('node bin/hulk --wrapper amd test/templates/*', function (error, stdout, st
   eval(stdout);
 });
 
-// wrapper options: --outputdir
-exec('node bin/hulk --outputdir dist/foo test/templates/*', function (error, stdout, stderr) {
+// wrapper options: --wrapper node
+exec('node bin/hulk --wrapper node test/templates/*', function (error, stdout, stderr) {
   if (error) throw error;
-  assert(fs.existsSync('dist/foo'), 'dist/foo directory created');
-  assert(fs.existsSync('dist/foo/list.js'), 'dist/foo/list.js file created');
-  rimraf.sync('dist');
+  eval(stdout);
+  function test(templates) {
+    template = templates['list'];
+    assert(template, 'template named list is defined');
+    assert(typeof template   == 'object', 'defined a templates.list object');
+    assert(typeof template.r == 'function', 'defined a templates.list.r function');
+  }
+  test(module.exports);
+  test(global.templates);
+});
+
+// wrapper options: --outputdir foo/dist
+exec('node bin/hulk --outputdir foo/dist test/templates/*', function (error, stdout, stderr) {
+  if (error) throw error;
+  assert(fs.existsSync('foo/dist'), 'foo/dist directory created');
+  assert(fs.existsSync('foo/dist/list.js'), 'foo/dist/list.js file created');
+  rimraf.sync('foo');
+});
+
+// wrapper options: --outputdir bar/dist --wrapper node
+exec('node bin/hulk --outputdir bar/dist --wrapper node test/templates/list.mustache', function (error, stdout, stderr) {
+  if (error) throw error;
+  assert(fs.existsSync('bar/dist'), 'bar/dist directory created');
+  assert(fs.existsSync('bar/dist/list.js'), 'bar/dist/list.js file created');
+
+  var template;
+  templateContents = fs.readFileSync('bar/dist/list.js', 'utf-8');
+  eval(templateContents);
+
+  template = module.exports;
+  assert(template, 'template named list is defined');
+  assert(typeof template   == 'object', 'defined a templates.list object');
+  assert(typeof template.r == 'function', 'defined a templates.list.r function');
+
+  template = global.templates['list'];
+  assert(template, 'template named list is defined');
+  assert(typeof template   == 'object', 'defined a templates.list object');
+  assert(typeof template.r == 'function', 'defined a templates.list.r function');
+
+  rimraf.sync('bar');
 });
 
 // templates wildcard
