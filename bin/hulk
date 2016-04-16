@@ -36,12 +36,12 @@ var specials       = ['/', '.', '*', '+', '?', '|','(', ')', '[', ']', '{', '}',
     'help': true
     }
   , shortHand      = { 
-    'n': ['--namespace'],
-    'o': ['--outputdir'], 
-    'v': ['--variable'], 
-    'w': ['--wrapper'], 
-    'h': ['--help'], 
-    'v': ['--version']
+    'n':  ['--namespace'],
+    'o':  ['--outputdir'], 
+    'vn': ['--variable'],
+    'w':  ['--wrapper'], 
+    'h':  ['--help'], 
+    'v':  ['--version']
     }
   , templates;
 
@@ -67,9 +67,9 @@ function extractFiles(args) {
   var usage = '\n' +
               cyan('USAGE:') + '   hulk [--wrapper wrapper] [--outputdir outputdir] [--namespace namespace] [--variable variable] FILES\n\n' +
               cyan('OPTIONS:') + ' [-w, --wrapper]   :: wraps the template (i.e. amd)\n' +
-              '         [-o, --outputdir] :: outputs the templates as individual files to a directory\n\n' +
-              '         [-n, --namespace] :: prepend string to template names\n\n' +
-              '         [-v, --variable]  :: variable name for non-amd wrapper\n\n' +
+              '         [-o,  --outputdir] :: outputs the templates as individual files to a directory\n\n' +
+              '         [-n,  --namespace] :: prepend string to template names\n\n' +
+              '         [-vn, --variable]  :: variable name for non-amd wrapper\n\n' +
               cyan('EXAMPLE:') + ' hulk --wrapper amd ./templates/*.mustache\n\n' +
               cyan('NOTE:') + '    hulk supports the "*" wildcard and allows you to target specific extensions too\n',
       files = [];
