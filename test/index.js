@@ -1042,6 +1042,18 @@ test("Lambdas work in multi-level inheritance", function() {
   is(child, 'changed c - changed p - changed o - changed g', 'should be changed child value');
 });
 
+test("Substitutions used in call for one partial template should not affect other during multi-level inheritance", function() {
+    var subPartial = Hogan.compile("Haloha!{{$replace}}replace me{{/replace}}");
+    var partial = Hogan.compile("{{>subPartial}} {{<subPartial}}{{$replace}}replaced1{{/replace}}{{/subPartial}} {{<subPartial}}{{$replace}}replaced2{{/replace}}{{/subPartial}}");
+    var t = Hogan.compile("{{>partial}}");
+
+    var s = t.render({}, {
+        subPartial: subPartial,
+        partial: partial
+    });
+    is(s, "Haloha!replace me Haloha!replaced1 Haloha!replaced2", "Substitutions are correctly handled during multi-level inheritance");
+});
+
 /* Safety tests */
 
 test("Updates object state", function() {
