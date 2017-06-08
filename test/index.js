@@ -1035,6 +1035,13 @@ test("Lambdas work in multi-level inheritance", function() {
   is(child, 'changed c - changed p - changed o - changed g', 'should be changed child value');
 });
 
+test("Sub content from first invocation must not appear in the second", function() {
+  const main = Hogan.compile('{{<parent}}{{$sub}}D{{/sub}}{{/parent}}{{>parent}}');
+  const parent = Hogan.compile('{{>child}}');
+  const child = Hogan.compile('{{$sub}}{{/sub}}');
+  is(main.render({}, { 'parent': parent, 'child': child }), 'D');
+});
+
 /* Safety tests */
 
 test("Updates object state", function() {
