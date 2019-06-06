@@ -9,7 +9,7 @@
     "lib/hogan.js",
     "lib/template.js"
   ]
-  , "homepage": "http://twitter.github.com/hogan.js/"
+  , "homepage": "https://twitter.github.com/hogan.js/"
   , "author": "Twitter Inc."
   , "repository": {
     "type": "git"
