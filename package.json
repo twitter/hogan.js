@@ -4,7 +4,7 @@
   , "version": "3.0.2"
   , "keywords": ["mustache", "template"]
   , "main": "./lib/hogan.js"
-  , "homepage": "http://twitter.github.com/hogan.js/"
+  , "homepage": "https://twitter.github.com/hogan.js/"
   , "author": "Twitter Inc."
   , "repository": {
     "type": "git"
