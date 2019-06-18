@@ -684,6 +684,13 @@ test("Dotted Names", function() {
   is(s, '"Joe" == "Joe"', "dotted names work");
 });
 
+test("Leading Dot", function() {
+  var text = "{{#items}}{{.title}}{{/items}}";
+  var t = Hogan.compile(text);
+  var s = t.render({items: [{title: 'a'}, {title: 'b'}, {}], title: 'ha'});
+  is(s, "ab", "leading dot forces lookup on top context");
+});
+
 test("Implicit Iterator", function() {
   var text = '{{#stuff}} {{.}} {{/stuff}}';
   var t = Hogan.compile(text);
@@ -1033,6 +1040,18 @@ test("Lambdas work in multi-level inheritance", function() {
     grandParent: '{{$a}}g{{/a}} - {{$b}}g{{/b}} - {{$c}}g{{/c}} - {{#lambda}}g{{/lambda}}'
   });
   is(child, 'changed c - changed p - changed o - changed g', 'should be changed child value');
+});
+
+test("Substitutions used in call for one partial template should not affect other during multi-level inheritance", function() {
+    var subPartial = Hogan.compile("Haloha!{{$replace}}replace me{{/replace}}");
+    var partial = Hogan.compile("{{>subPartial}} {{<subPartial}}{{$replace}}replaced1{{/replace}}{{/subPartial}} {{<subPartial}}{{$replace}}replaced2{{/replace}}{{/subPartial}}");
+    var t = Hogan.compile("{{>partial}}");
+
+    var s = t.render({}, {
+        subPartial: subPartial,
+        partial: partial
+    });
+    is(s, "Haloha!replace me Haloha!replaced1 Haloha!replaced2", "Substitutions are correctly handled during multi-level inheritance");
 });
 
 /* Safety tests */
