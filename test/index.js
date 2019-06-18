@@ -927,6 +927,40 @@ test("Recursion in inherited templates", function() {
   is(s, "override override override don't recurse", "matches expected recursive output");
 });
 
+test('Using a inherited partials twice with different sub values should have a different output', function() {
+  is(
+    Hogan
+    .compile('{{<a}}{{/a}}')
+    .render({}, {
+      a: '{{<b}}{{$i}} Y {{/i}}{{/b}} {{<b}}{{$i}} Z {{/i}}{{/b}}',
+      b: '{{$i}}{{/i}}'
+    }),
+    ' Y   Z ',
+    'must return different values'
+  );
+});
+
+test('Lambdas in deep partials with the same name', function() {
+  is(
+    Hogan
+    .compile('{{<a}}{{/a}}')
+    .render({
+      l: function() {
+        return function(text) {
+          return text.toLowerCase();
+        }
+      }
+    }, {
+      a: '{{$g}}{{/g}}' +
+         '{{<b}}{{$i}} {{#l}}Z{{/l}} {{/i}}{{/b}} ' +
+         '{{<b}}{{$i}} {{#l}}X{{/l}} {{/i}}{{/b}}',
+      b: '{{$i}}{{/i}}'
+    }),
+    ' z   x ',
+    'lambdas should have different text provided'
+  );
+});
+
 test("Cache contains old partials instances", function() {
   var tests = [{
     template: "{{<parent}}{{$a}}c{{/a}}{{/parent}}",
