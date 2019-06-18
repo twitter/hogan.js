@@ -927,6 +927,34 @@ test("Recursion in inherited templates", function() {
   is(s, "override override override don't recurse", "matches expected recursive output");
 });
 
+test("Overriden contents with nested inheritance", function() {
+  var child = Hogan.compile( '{{<parent}}{{$region}}a{{<parent}}{{$region}}b{{/region}}{{/parent}}{{/region}}{{/parent}}').render({}, {
+    parent: '...{{$region}}{{/region}}.'
+  });
+  
+  is(child, "...a...b..", "should render both contents");
+  
+  var child = Hogan.compile( '{{<parent}}{{$region}}a{{<parent}}{{$region}}b{{<parent}}{{$region}}c{{/region}}{{/parent}}{{/region}}{{/parent}}{{/region}}{{/parent}}').render({}, {
+    parent: '...{{$region}}{{/region}}.'
+  });		
+  is( child, "...a...b...c...", "should render the three nested contents" );
+});
+
+test( "Overriden contents with nested inheritance twice", function(){
+  var child = Hogan.compile( '{{<parent}}{{$region}}a{{<parent}}{{$region}}b{{/region}}{{/parent}}{{/region}}{{/parent}}|{{<parent}}{{$region}}c{{<parent}}{{$region}}d{{/region}}{{/parent}}{{/region}}{{/parent}}').render({}, {
+    parent: '...{{$region}}{{/region}}.'
+  });		
+  is( child, "...a...b..|...c...d..");
+});
+
+test( "Overriden contents with nested and multiple inheritance", function(){
+  var child = Hogan.compile( '{{<parent}}{{$region}}c{{<parent}}{{$region}}d{{/region}}{{/parent}}{{/region}}{{/parent}}').render({}, {
+    parent: '{{<grandParent}}{{$region}}a{{<grandParent}}{{$region}}b{{/region}}{{/grandParent}}{{/region}}{{/grandParent}}',
+    grandParent: '...{{$region}}{{/region}}.'
+  });	
+  is( child, "...c...d..");
+});	
+
 test("Cache contains old partials instances", function() {
   var tests = [{
     template: "{{<parent}}{{$a}}c{{/a}}{{/parent}}",
