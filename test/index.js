@@ -499,6 +499,23 @@ test("Undefined Return Value From Lambda", function() {
   is(s, "abcdef", "deal with undefined return values from lambdas.")
 });
 
+test("Key from parent context should resolve in lambda", function() {
+  is(Hogan.compile(
+    '{{#a}}' +
+      '{{#lambda}}{{#a}}{{b}}{{/a}}{{/lambda}}' +
+    '{{/a}}'
+  ).render({
+    a: {
+      b: 'val'
+    },
+    lambda: function() {
+      return function(text) {
+        return text;
+      };
+    }
+  }), 'val');
+});
+
 test("Sections with null values are treated as key hits", function() {
   var text = "{{#obj}}{{#sub}}{{^test}}ok{{/test}}{{/sub}}{{/obj}}";
   var t = Hogan.compile(text);
