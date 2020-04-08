@@ -30,7 +30,7 @@ var HoganTemplate = (function () {
       return this.r(context, partials);
     },
 
-    // tries to find a partial in the curent scope and render it
+    // tries to find a partial in the current scope and render it
     rp: function(name, context, partials, indent) {
       var partial = partials[name];
 
