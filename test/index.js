@@ -691,6 +691,13 @@ test("Implicit Iterator", function() {
   is(s, " 42  43  44 ", "implicit iterators work");
 });
 
+test("Root-level Implicit Iterator", function() {
+  var text = '{{#.}} {{name}} {{/.}}';
+  var t = Hogan.compile(text);
+  var s = t.render([{name:"a"},{name:"b"}]);
+  is(s, " a  b ", "root-level implicit iterators work");
+});
+
 test("Partials And Delimiters", function() {
   var text = '{{>include}}*\n{{= | | =}}\n*|>include|';
   var partialText = ' .{{value}}. ';
